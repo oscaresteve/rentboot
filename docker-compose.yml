@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: rentboot_postgres
+    environment:
+      POSTGRES_DB: rentboot
+      POSTGRES_USER: rentboot
+      POSTGRES_PASSWORD: rentboot2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - rentboot_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  rentboot_data:
