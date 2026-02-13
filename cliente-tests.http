@@ -1,0 +1,116 @@
+@host = http://localhost:8090
+@baseUrl = {{host}}/api/clientes
+@ts = {{$timestamp}}
+@email = cliente.{{ts}}@example.com
+@cliente_id = 1
+
+### 1) Crear cliente (OK)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Test {{ts}}",
+  "email": "{{email}}",
+  "telefono": "600123123"
+}
+
+> {%
+client.test("CREATE cliente -> 200", function() {
+  client.assert(response.status === 200, "Status esperado: 200");
+});
+client.test("CREATE cliente -> devuelve id", function() {
+  client.assert(response.body.id != null, "id no debe ser null");
+});
+client.global.set("cliente_id", response.body.id);
+%}
+
+### 2) Obtener cliente por ID (OK)
+GET {{baseUrl}}/{{cliente_id}}
+Accept: application/json
+
+> {%
+client.test("GET by id -> 200", function() {
+  client.assert(response.status === 200, "Status esperado: 200");
+});
+client.test("GET by id -> email correcto", function() {
+  client.assert(response.body.email === "{{email}}", "email no coincide");
+});
+%}
+
+### 3) Listar clientes (OK)
+GET {{baseUrl}}?page=0&size=10&sort=id,asc
+Accept: application/json
+
+> {%
+client.test("LIST clientes -> 200", function() {
+  client.assert(response.status === 200, "Status esperado: 200");
+});
+client.test("LIST clientes -> formato página", function() {
+  client.assert(response.body.content != null, "content no debe ser null");
+});
+%}
+
+### 4) Filtrar por nombre (OK)
+GET {{baseUrl}}?page=0&size=10&sort=nombre,asc&nombre=Cliente%20Test
+Accept: application/json
+
+> {%
+client.test("FILTER clientes -> 200", function() {
+  client.assert(response.status === 200, "Status esperado: 200");
+});
+%}
+
+### 5) Actualizar cliente (OK)
+PUT {{baseUrl}}/{{cliente_id}}
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Test Actualizado {{ts}}",
+  "email": "actualizado.{{ts}}@example.com",
+  "telefono": "699999999"
+}
+
+> {%
+client.test("UPDATE cliente -> 200", function() {
+  client.assert(response.status === 200, "Status esperado: 200");
+});
+client.test("UPDATE cliente -> nombre actualizado", function() {
+  client.assert(response.body.nombre.indexOf("Actualizado") !== -1, "nombre no actualizado");
+});
+%}
+
+### 6) Crear cliente inválido (esperado 400 por validación)
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "email": "no-es-email",
+  "telefono": "123"
+}
+
+> {%
+client.test("CREATE inválido -> 400", function() {
+  client.assert(response.status === 400, "Status esperado: 400");
+});
+%}
+
+### 7) Eliminar cliente (OK)
+DELETE {{baseUrl}}/{{cliente_id}}
+Accept: application/json
+
+> {%
+client.test("DELETE cliente -> 204", function() {
+  client.assert(response.status === 204, "Status esperado: 204");
+});
+%}
+
+### 8) Obtener cliente eliminado (sin handler global suele devolver 5xx)
+GET {{baseUrl}}/{{cliente_id}}
+Accept: application/json
+
+> {%
+client.test("GET eliminado -> error", function() {
+  client.assert(response.status >= 400, "Se esperaba respuesta de error");
+});
+%}
