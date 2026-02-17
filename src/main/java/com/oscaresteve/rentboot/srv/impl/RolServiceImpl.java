@@ -1,8 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,13 +44,10 @@ public class RolServiceImpl implements RolService {
     return page.map(mapper::RolDbToRolList);
   }
 
-  // Filtrado opcional
   @Override
-  public List<RolList> findByNombreContaining(String nombre) {
-    return rolRepository.findAll().stream()
-      .filter(r -> r.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-      .map(mapper::RolDbToRolList)
-      .collect(Collectors.toList());
+  public Page<RolList> getRolesByNombre(String nombre, Pageable pageable) {
+    Page<RolDb> page = rolRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+    return page.map(mapper::RolDbToRolList);
   }
 
   // Update

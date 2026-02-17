@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,8 +17,8 @@ public interface RolService {
 
   Page<RolList> getAllRoles(Pageable pageable);
 
-  // Filtrado opcional
-  List<RolList> findByNombreContaining(String nombre);
+  // Filtrado
+  Page<RolList> getRolesByNombre(String nombre, Pageable pageable);
 
   // Update
   RolView updateRol(Long id, RolEdit rolEdit);

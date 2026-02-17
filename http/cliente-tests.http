@@ -1,0 +1,129 @@
+@host = http://localhost:8090
+@baseUrl = {{host}}/api/clientes
+@clienteId = 1
+@ts = {{$timestamp}}
+@dupEmail = cliente.duplicado@example.com
+
+### ------------------------------------------------------------
+### 1) Crear cliente (OK)
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Test {{ts}}",
+  "email": "cliente.ok.{{ts}}@example.com",
+  "telefono": "600123123"
+}
+
+### ------------------------------------------------------------
+### 2) Obtener cliente por id (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/{{clienteId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 3) Listar clientes (paginacion + ordenacion)
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=nombre,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 4) Filtrar por nombre (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/nombre/Cliente?sort=nombre,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 5) Filtrar por email (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/email/example.com?sort=email,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 6) Filtrar por telefono (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/telefono/600?sort=telefono,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 7) Actualizar cliente (OK)
+### ------------------------------------------------------------
+PUT {{baseUrl}}/{{clienteId}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Actualizado {{ts}}",
+  "email": "cliente.actualizado.{{ts}}@example.com",
+  "telefono": "699999999"
+}
+
+### ------------------------------------------------------------
+### 8) Eliminar cliente (OK)
+### ------------------------------------------------------------
+DELETE {{baseUrl}}/{{clienteId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 9) Entidad no encontrada -> 404
+### ------------------------------------------------------------
+GET {{baseUrl}}/999999 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 10) Integridad (email unico duplicado) -> 409
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Duplicado A",
+  "email": "{{dupEmail}}",
+  "telefono": "600111111"
+}
+
+###
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Cliente Duplicado B",
+  "email": "{{dupEmail}}",
+  "telefono": "600222222"
+}
+
+### ------------------------------------------------------------
+### 11) Datos de entrada invalidos -> 400
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "email": "correo-invalido",
+  "telefono": "123"
+}
+
+### ------------------------------------------------------------
+### 12) Error de validacion de campos -> 400 (nombre > 100)
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901",
+  "email": "validacion.campos@example.com",
+  "telefono": "600333333"
+}
+
+### ------------------------------------------------------------
+### 13) Excepcion de filtro (sort invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=nombre,invalido&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 14) Excepcion de filtro (size invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=id,asc&page=0&size=0 HTTP/1.1
+Content-Type: application/json
