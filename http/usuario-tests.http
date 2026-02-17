@@ -1,0 +1,124 @@
+@host = http://localhost:8090
+@baseUrl = {{host}}/api/usuarios
+@usuarioId = 1
+@rolId = 1
+@ts = {{$timestamp}}
+@dupUsername = usuario.duplicado.{{ts}}
+
+### ------------------------------------------------------------
+### 1) Crear usuario (OK)
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "usuario.test.{{ts}}",
+  "password": "secret123",
+  "enabled": true,
+  "rolIds": [{{rolId}}]
+}
+
+### ------------------------------------------------------------
+### 2) Obtener usuario por id (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/{{usuarioId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 3) Listar usuarios (paginacion + ordenacion)
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=username,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 4) Filtrar usuarios por username (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/username/usuario?sort=username,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 5) Actualizar usuario (OK)
+### ------------------------------------------------------------
+PUT {{baseUrl}}/{{usuarioId}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "usuario.actualizado.{{ts}}",
+  "password": "secret456",
+  "enabled": true,
+  "rolIds": [{{rolId}}]
+}
+
+### ------------------------------------------------------------
+### 6) Eliminar usuario (OK)
+### ------------------------------------------------------------
+DELETE {{baseUrl}}/{{usuarioId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 7) Entidad no encontrada -> 404
+### ------------------------------------------------------------
+GET {{baseUrl}}/999999 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 8) Integridad (username unico duplicado) -> 409
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "{{dupUsername}}",
+  "password": "secret123",
+  "enabled": true,
+  "rolIds": [{{rolId}}]
+}
+
+###
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "{{dupUsername}}",
+  "password": "secret123",
+  "enabled": true,
+  "rolIds": [{{rolId}}]
+}
+
+### ------------------------------------------------------------
+### 9) Datos de entrada invalidos -> 400
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": "",
+  "enabled": null,
+  "rolIds": null
+}
+
+### ------------------------------------------------------------
+### 10) Error de dominio (rol inexistente) -> 400
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "usuario.sin.rol.{{ts}}",
+  "password": "secret123",
+  "enabled": true,
+  "rolIds": [999999]
+}
+
+### ------------------------------------------------------------
+### 11) Excepcion de filtro (sort invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=username,invalido&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 12) Excepcion de filtro (size invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=id,asc&page=0&size=0 HTTP/1.1
+Content-Type: application/json

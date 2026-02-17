@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,13 +56,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     return page.map(mapper::UsuarioDbToUsuarioList);
   }
 
-  // Filtrado opcional
   @Override
-  public List<UsuarioList> findByUsernameContaining(String username) {
-    return usuarioRepository.findAll().stream()
-      .filter(u -> u.getUsername().toLowerCase().contains(username.toLowerCase()))
-      .map(mapper::UsuarioDbToUsuarioList)
-      .collect(Collectors.toList());
+  public Page<UsuarioList> getUsuariosByUsername(String username, Pageable pageable) {
+    Page<UsuarioDb> page = usuarioRepository.findByUsernameContainingIgnoreCase(username, pageable);
+    return page.map(mapper::UsuarioDbToUsuarioList);
   }
 
   // Update

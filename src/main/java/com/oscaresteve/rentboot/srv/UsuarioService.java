@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,8 +17,8 @@ public interface UsuarioService {
 
   Page<UsuarioList> getAllUsuarios(Pageable pageable);
 
-  // Filtrado opcional
-  List<UsuarioList> findByUsernameContaining(String username);
+  // Filtrado
+  Page<UsuarioList> getUsuariosByUsername(String username, Pageable pageable);
 
   // Update
   UsuarioView updateUsuario(Long id, UsuarioEdit usuarioEdit);
