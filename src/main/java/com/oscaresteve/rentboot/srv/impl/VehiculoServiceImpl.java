@@ -1,8 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,12 +53,10 @@ public class VehiculoServiceImpl implements VehiculoService {
     return page.map(mapper::VehiculoDbToVehiculoList);
   }
 
-  // Filtrado opcional
   @Override
-  public List<VehiculoList> findByDisponibleTrue() {
-    return vehiculoRepository.findByDisponibleTrue().stream()
-      .map(mapper::VehiculoDbToVehiculoList)
-      .collect(Collectors.toList());
+  public Page<VehiculoList> getVehiculosByDisponible(Boolean disponible, Pageable pageable) {
+    Page<VehiculoDb> page = vehiculoRepository.findByDisponible(disponible, pageable);
+    return page.map(mapper::VehiculoDbToVehiculoList);
   }
 
   // Update

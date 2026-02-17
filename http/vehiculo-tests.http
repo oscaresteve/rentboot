@@ -1,85 +1,83 @@
 @host = http://localhost:8090
-@baseUrl = {{host}}/api/clientes
-@clienteId = 3
+@baseUrl = {{host}}/api/vehiculos
+@vehiculoId = 1
+@categoriaId = 1
 @ts = {{$timestamp}}
-@dupEmail = cliente.duplicado@example.com
+@dupMatricula = MAT-{{ts}}
 
 ### ------------------------------------------------------------
-### 1) Crear cliente (OK)
+### 1) Crear vehiculo (OK)
 ### ------------------------------------------------------------
 POST {{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "Cliente Test {{ts}}",
-  "email": "cliente.ok.{{ts}}@example.com",
-  "telefono": "600123123"
+  "marca": "Toyota",
+  "modelo": "Corolla",
+  "matricula": "AAA{{ts}}",
+  "precioPorDia": 45.50,
+  "disponible": true,
+  "categoriaId": {{categoriaId}}
 }
 
 ### ------------------------------------------------------------
-### 2) Obtener cliente por id (OK)
+### 2) Obtener vehiculo por id (OK)
 ### ------------------------------------------------------------
-GET {{baseUrl}}/{{clienteId}} HTTP/1.1
+GET {{baseUrl}}/{{vehiculoId}} HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 3) Listar clientes (paginacion + ordenacion)
+### 3) Listar vehiculos (paginacion + ordenacion)
 ### ------------------------------------------------------------
-GET {{baseUrl}}?sort=nombre,asc&page=0&size=5 HTTP/1.1
+GET {{baseUrl}}?sort=marca,asc&page=0&size=5 HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 4) Filtrar por nombre (OK)
+### 4) Filtrar vehiculos por disponible (OK)
 ### ------------------------------------------------------------
-GET {{baseUrl}}/nombre/Cliente?sort=nombre,asc&page=0&size=5 HTTP/1.1
+GET {{baseUrl}}/disponible/true?sort=id,asc&page=0&size=5 HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 5) Filtrar por email (OK)
+### 5) Actualizar vehiculo (OK)
 ### ------------------------------------------------------------
-GET {{baseUrl}}/email/example.com?sort=email,asc&page=0&size=5 HTTP/1.1
-Content-Type: application/json
-
-### ------------------------------------------------------------
-### 6) Filtrar por telefono (OK)
-### ------------------------------------------------------------
-GET {{baseUrl}}/telefono/600?sort=telefono,asc&page=0&size=5 HTTP/1.1
-Content-Type: application/json
-
-### ------------------------------------------------------------
-### 7) Actualizar cliente (OK)
-### ------------------------------------------------------------
-PUT {{baseUrl}}/{{clienteId}} HTTP/1.1
+PUT {{baseUrl}}/{{vehiculoId}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "Cliente Actualizado {{ts}}",
-  "email": "cliente.actualizado.{{ts}}@example.com",
-  "telefono": "699999999"
+  "marca": "Toyota",
+  "modelo": "Corolla Cross",
+  "matricula": "BBB{{ts}}",
+  "precioPorDia": 60.00,
+  "disponible": false,
+  "categoriaId": {{categoriaId}}
 }
 
 ### ------------------------------------------------------------
-### 8) Eliminar cliente (OK)
+### 6) Eliminar vehiculo (OK)
 ### ------------------------------------------------------------
-DELETE {{baseUrl}}/{{clienteId}} HTTP/1.1
+DELETE {{baseUrl}}/{{vehiculoId}} HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 9) Entidad no encontrada -> 404
+### 7) Entidad no encontrada -> 404
 ### ------------------------------------------------------------
 GET {{baseUrl}}/999999 HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 10) Integridad (email unico duplicado) -> 409
+### 8) Integridad (matricula unica duplicada) -> 409
 ### ------------------------------------------------------------
 POST {{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "Cliente Duplicado A",
-  "email": "{{dupEmail}}",
-  "telefono": "600111111"
+  "marca": "Ford",
+  "modelo": "Focus",
+  "matricula": "{{dupMatricula}}",
+  "precioPorDia": 50.00,
+  "disponible": true,
+  "categoriaId": {{categoriaId}}
 }
 
 ###
@@ -87,43 +85,52 @@ POST {{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "Cliente Duplicado B",
-  "email": "{{dupEmail}}",
-  "telefono": "600222222"
+  "marca": "Ford",
+  "modelo": "Fiesta",
+  "matricula": "{{dupMatricula}}",
+  "precioPorDia": 40.00,
+  "disponible": true,
+  "categoriaId": {{categoriaId}}
 }
 
 ### ------------------------------------------------------------
-### 11) Datos de entrada invalidos -> 400
+### 9) Datos de entrada invalidos -> 400
 ### ------------------------------------------------------------
 POST {{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "",
-  "email": "correo-invalido",
-  "telefono": "123"
+  "marca": "",
+  "modelo": "",
+  "matricula": "",
+  "precioPorDia": -1,
+  "disponible": null,
+  "categoriaId": null
 }
 
 ### ------------------------------------------------------------
-### 12) Error de validacion de campos -> 400 (nombre > 100)
+### 10) Error de dominio (categoria inexistente) -> 404
 ### ------------------------------------------------------------
 POST {{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901",
-  "email": "validacion.campos@example.com",
-  "telefono": "600333333"
+  "marca": "Nissan",
+  "modelo": "Qashqai",
+  "matricula": "CCC{{ts}}",
+  "precioPorDia": 70.00,
+  "disponible": true,
+  "categoriaId": 999999
 }
 
 ### ------------------------------------------------------------
-### 13) Excepcion de filtro (sort invalido) -> 400
+### 11) Excepcion de filtro (sort invalido) -> 400
 ### ------------------------------------------------------------
-GET {{baseUrl}}?sort=nombre,invalido&page=0&size=5 HTTP/1.1
+GET {{baseUrl}}?sort=marca,invalido&page=0&size=5 HTTP/1.1
 Content-Type: application/json
 
 ### ------------------------------------------------------------
-### 14) Excepcion de filtro (size invalido) -> 400
+### 12) Excepcion de filtro (size invalido) -> 400
 ### ------------------------------------------------------------
 GET {{baseUrl}}?sort=id,asc&page=0&size=0 HTTP/1.1
 Content-Type: application/json

@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,8 +17,8 @@ public interface VehiculoService {
 
   Page<VehiculoList> getAllVehiculos(Pageable pageable);
 
-  // Filtrado opcional
-  List<VehiculoList> findByDisponibleTrue();
+  // Filtrado
+  Page<VehiculoList> getVehiculosByDisponible(Boolean disponible, Pageable pageable);
 
   // Update
   VehiculoView updateVehiculo(Long id, VehiculoEdit vehiculoEdit);
