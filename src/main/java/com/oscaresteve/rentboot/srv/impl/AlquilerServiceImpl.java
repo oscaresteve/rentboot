@@ -1,8 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,19 +61,16 @@ public class AlquilerServiceImpl implements AlquilerService {
     return page.map(mapper::AlquilerDbToAlquilerList);
   }
 
-  // Filtrado opcional
   @Override
-  public List<AlquilerList> findByClienteId(Long clienteId) {
-    return alquilerRepository.findByClienteId(clienteId).stream()
-      .map(mapper::AlquilerDbToAlquilerList)
-      .collect(Collectors.toList());
+  public Page<AlquilerList> getAlquileresByClienteId(Long clienteId, Pageable pageable) {
+    Page<AlquilerDb> page = alquilerRepository.findByClienteId(clienteId, pageable);
+    return page.map(mapper::AlquilerDbToAlquilerList);
   }
 
   @Override
-  public List<AlquilerList> findByVehiculoId(Long vehiculoId) {
-    return alquilerRepository.findByVehiculoId(vehiculoId).stream()
-      .map(mapper::AlquilerDbToAlquilerList)
-      .collect(Collectors.toList());
+  public Page<AlquilerList> getAlquileresByVehiculoId(Long vehiculoId, Pageable pageable) {
+    Page<AlquilerDb> page = alquilerRepository.findByVehiculoId(vehiculoId, pageable);
+    return page.map(mapper::AlquilerDbToAlquilerList);
   }
 
   // Update

@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,10 +17,10 @@ public interface AlquilerService {
 
   Page<AlquilerList> getAllAlquileres(Pageable pageable);
 
-  // Filtrado opcional
-  List<AlquilerList> findByClienteId(Long clienteId);
+  // Filtrado
+  Page<AlquilerList> getAlquileresByClienteId(Long clienteId, Pageable pageable);
 
-  List<AlquilerList> findByVehiculoId(Long vehiculoId);
+  Page<AlquilerList> getAlquileresByVehiculoId(Long vehiculoId, Pageable pageable);
 
   // Update
   AlquilerView updateAlquiler(Long id, AlquilerEdit alquilerEdit);
