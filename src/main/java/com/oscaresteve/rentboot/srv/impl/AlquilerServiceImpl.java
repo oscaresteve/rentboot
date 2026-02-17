@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.AlquilerDb;
 import com.oscaresteve.rentboot.model.db.ClienteDb;
 import com.oscaresteve.rentboot.model.db.VehiculoDb;
@@ -38,9 +39,9 @@ public class AlquilerServiceImpl implements AlquilerService {
   @Override
   public AlquilerView createAlquiler(AlquilerEdit alquilerEdit) {
     ClienteDb clienteDb = clienteRepository.findById(alquilerEdit.getClienteId())
-      .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("CLIENTE_NOT_FOUND", "Cliente no encontrado"));
     VehiculoDb vehiculoDb = vehiculoRepository.findById(alquilerEdit.getVehiculoId())
-      .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado"));
 
     AlquilerDb alquilerDb = mapper.AlquilerEditToAlquilerDb(alquilerEdit);
     alquilerDb.setCliente(clienteDb);
@@ -53,7 +54,7 @@ public class AlquilerServiceImpl implements AlquilerService {
   @Override
   public AlquilerView getAlquilerById(Long id) {
     AlquilerDb alquilerDb = alquilerRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Alquiler no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("ALQUILER_NOT_FOUND", "Alquiler no encontrado"));
     return mapper.AlquilerDbToAlquilerView(alquilerDb);
   }
 
@@ -82,11 +83,11 @@ public class AlquilerServiceImpl implements AlquilerService {
   @Override
   public AlquilerView updateAlquiler(Long id, AlquilerEdit alquilerEdit) {
     AlquilerDb alquilerDb = alquilerRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Alquiler no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("ALQUILER_NOT_FOUND", "Alquiler no encontrado"));
     ClienteDb clienteDb = clienteRepository.findById(alquilerEdit.getClienteId())
-      .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("CLIENTE_NOT_FOUND", "Cliente no encontrado"));
     VehiculoDb vehiculoDb = vehiculoRepository.findById(alquilerEdit.getVehiculoId())
-      .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado"));
 
     mapper.updateAlquilerDbFromAlquilerEdit(alquilerEdit, alquilerDb);
     alquilerDb.setCliente(clienteDb);
@@ -99,7 +100,7 @@ public class AlquilerServiceImpl implements AlquilerService {
   @Override
   public void deleteAlquiler(Long id) {
     if (!alquilerRepository.existsById(id)) {
-      throw new RuntimeException("Alquiler no encontrado");
+      throw new EntityNotFoundException("ALQUILER_NOT_FOUND", "Alquiler no encontrado");
     }
     alquilerRepository.deleteById(id);
   }

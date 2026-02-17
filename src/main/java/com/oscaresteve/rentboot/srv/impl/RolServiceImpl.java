@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.RolDb;
 import com.oscaresteve.rentboot.model.dto.rol.RolEdit;
 import com.oscaresteve.rentboot.model.dto.rol.RolList;
@@ -36,7 +37,7 @@ public class RolServiceImpl implements RolService {
   @Override
   public RolView getRolById(Long id) {
     RolDb rolDb = rolRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("ROL_NOT_FOUND", "Rol no encontrado"));
     return mapper.RolDbToRolView(rolDb);
   }
 
@@ -59,7 +60,7 @@ public class RolServiceImpl implements RolService {
   @Override
   public RolView updateRol(Long id, RolEdit rolEdit) {
     RolDb rolDb = rolRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("ROL_NOT_FOUND", "Rol no encontrado"));
     mapper.updateRolDbFromRolEdit(rolEdit, rolDb);
     rolDb = rolRepository.save(rolDb);
     return mapper.RolDbToRolView(rolDb);
@@ -69,7 +70,7 @@ public class RolServiceImpl implements RolService {
   @Override
   public void deleteRol(Long id) {
     if (!rolRepository.existsById(id)) {
-      throw new RuntimeException("Rol no encontrado");
+      throw new EntityNotFoundException("ROL_NOT_FOUND", "Rol no encontrado");
     }
     rolRepository.deleteById(id);
   }

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.ClienteDb;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteEdit;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteList;
@@ -33,7 +34,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteView getClienteById(Long id) {
         ClienteDb clienteDb = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("CLIENTE_NOT_FOUND", "Cliente no encontrado"));
         return mapper.ClienteDbToClienteView(clienteDb);
     }
 
@@ -65,7 +66,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public ClienteView updateCliente(Long id, ClienteEdit clienteEdit) {
         ClienteDb clienteDb = clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("CLIENTE_NOT_FOUND", "Cliente no encontrado"));
         mapper.updateClienteDbFromClienteEdit(clienteEdit, clienteDb);
         clienteDb = clienteRepository.save(clienteDb);
         return mapper.ClienteDbToClienteView(clienteDb);
@@ -75,7 +76,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     public void deleteCliente(Long id) {
         if(!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente no encontrado");
+            throw new EntityNotFoundException("CLIENTE_NOT_FOUND", "Cliente no encontrado");
         }
         clienteRepository.deleteById(id);
     }

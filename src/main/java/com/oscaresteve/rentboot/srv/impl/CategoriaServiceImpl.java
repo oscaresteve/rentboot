@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.CategoriaDb;
 import com.oscaresteve.rentboot.model.dto.categoria.CategoriaEdit;
 import com.oscaresteve.rentboot.model.dto.categoria.CategoriaList;
@@ -36,7 +37,7 @@ public class CategoriaServiceImpl implements CategoriaService {
   @Override
   public CategoriaView getCategoriaById(Long id) {
     CategoriaDb categoriaDb = categoriaRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+      .orElseThrow(() -> new EntityNotFoundException("CATEGORIA_NOT_FOUND", "Categoria no encontrada"));
     return mapper.CategoriaDbToCategoriaView(categoriaDb);
   }
 
@@ -59,7 +60,7 @@ public class CategoriaServiceImpl implements CategoriaService {
   @Override
   public CategoriaView updateCategoria(Long id, CategoriaEdit categoriaEdit) {
     CategoriaDb categoriaDb = categoriaRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+      .orElseThrow(() -> new EntityNotFoundException("CATEGORIA_NOT_FOUND", "Categoria no encontrada"));
     mapper.updateCategoriaDbFromCategoriaEdit(categoriaEdit, categoriaDb);
     categoriaDb = categoriaRepository.save(categoriaDb);
     return mapper.CategoriaDbToCategoriaView(categoriaDb);
@@ -69,7 +70,7 @@ public class CategoriaServiceImpl implements CategoriaService {
   @Override
   public void deleteCategoria(Long id) {
     if (!categoriaRepository.existsById(id)) {
-      throw new RuntimeException("Categoria no encontrada");
+      throw new EntityNotFoundException("CATEGORIA_NOT_FOUND", "Categoria no encontrada");
     }
     categoriaRepository.deleteById(id);
   }

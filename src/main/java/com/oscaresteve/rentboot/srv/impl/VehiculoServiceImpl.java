@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.CategoriaDb;
 import com.oscaresteve.rentboot.model.db.VehiculoDb;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoEdit;
@@ -33,7 +34,7 @@ public class VehiculoServiceImpl implements VehiculoService {
   @Override
   public VehiculoView createVehiculo(VehiculoEdit vehiculoEdit) {
     CategoriaDb categoriaDb = categoriaRepository.findById(vehiculoEdit.getCategoriaId())
-      .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+      .orElseThrow(() -> new EntityNotFoundException("CATEGORIA_NOT_FOUND", "Categoria no encontrada"));
 
     VehiculoDb vehiculoDb = mapper.VehiculoEditToVehiculoDb(vehiculoEdit);
     vehiculoDb.setCategoria(categoriaDb);
@@ -45,7 +46,7 @@ public class VehiculoServiceImpl implements VehiculoService {
   @Override
   public VehiculoView getVehiculoById(Long id) {
     VehiculoDb vehiculoDb = vehiculoRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado"));
     return mapper.VehiculoDbToVehiculoView(vehiculoDb);
   }
 
@@ -67,9 +68,9 @@ public class VehiculoServiceImpl implements VehiculoService {
   @Override
   public VehiculoView updateVehiculo(Long id, VehiculoEdit vehiculoEdit) {
     VehiculoDb vehiculoDb = vehiculoRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Vehiculo no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado"));
     CategoriaDb categoriaDb = categoriaRepository.findById(vehiculoEdit.getCategoriaId())
-      .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+      .orElseThrow(() -> new EntityNotFoundException("CATEGORIA_NOT_FOUND", "Categoria no encontrada"));
 
     mapper.updateVehiculoDbFromVehiculoEdit(vehiculoEdit, vehiculoDb);
     vehiculoDb.setCategoria(categoriaDb);
@@ -81,7 +82,7 @@ public class VehiculoServiceImpl implements VehiculoService {
   @Override
   public void deleteVehiculo(Long id) {
     if (!vehiculoRepository.existsById(id)) {
-      throw new RuntimeException("Vehiculo no encontrado");
+      throw new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado");
     }
     vehiculoRepository.deleteById(id);
   }

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.oscaresteve.rentboot.exception.DomainException;
+import com.oscaresteve.rentboot.exception.EntityNotFoundException;
 import com.oscaresteve.rentboot.model.db.RolDb;
 import com.oscaresteve.rentboot.model.db.UsuarioDb;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioEdit;
@@ -45,7 +47,7 @@ public class UsuarioServiceImpl implements UsuarioService {
   @Override
   public UsuarioView getUsuarioById(Long id) {
     UsuarioDb usuarioDb = usuarioRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("USUARIO_NOT_FOUND", "Usuario no encontrado"));
     return mapper.UsuarioDbToUsuarioView(usuarioDb);
   }
 
@@ -68,7 +70,7 @@ public class UsuarioServiceImpl implements UsuarioService {
   @Override
   public UsuarioView updateUsuario(Long id, UsuarioEdit usuarioEdit) {
     UsuarioDb usuarioDb = usuarioRepository.findById(id)
-      .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+      .orElseThrow(() -> new EntityNotFoundException("USUARIO_NOT_FOUND", "Usuario no encontrado"));
     Set<RolDb> roles = resolveRoles(usuarioEdit.getRolIds());
 
     mapper.updateUsuarioDbFromUsuarioEdit(usuarioEdit, usuarioDb);
@@ -81,7 +83,7 @@ public class UsuarioServiceImpl implements UsuarioService {
   @Override
   public void deleteUsuario(Long id) {
     if (!usuarioRepository.existsById(id)) {
-      throw new RuntimeException("Usuario no encontrado");
+      throw new EntityNotFoundException("USUARIO_NOT_FOUND", "Usuario no encontrado");
     }
     usuarioRepository.deleteById(id);
   }
@@ -89,8 +91,9 @@ public class UsuarioServiceImpl implements UsuarioService {
   private Set<RolDb> resolveRoles(Set<Long> rolIds) {
     Set<RolDb> roles = rolRepository.findAllById(rolIds).stream().collect(Collectors.toSet());
     if (roles.size() != rolIds.size()) {
-      throw new RuntimeException("Uno o más roles no existen");
+      throw new DomainException("INVALID_ROLE_REFERENCE", "Uno o mas roles no existen");
     }
     return roles;
   }
 }
+
