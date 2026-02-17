@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,8 +17,12 @@ public interface ClienteService {
 
   Page<ClienteList> getAllClientes(Pageable pageable);
 
-  // Filtrado opcional
-  List<ClienteList> findByNombreContaining(String nombre);
+  // Filtrado
+  Page<ClienteList> getClientesByNombre(String nombre, Pageable pageable);
+
+  Page<ClienteList> getClientesByEmail(String email, Pageable pageable);
+
+  Page<ClienteList> getClientesByTelefono(String telefono, Pageable pageable);
 
   // Update
   ClienteView updateCliente(Long id, ClienteEdit clienteEdit);

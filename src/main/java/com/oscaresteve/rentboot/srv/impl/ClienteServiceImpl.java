@@ -1,8 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,13 +43,22 @@ public class ClienteServiceImpl implements ClienteService {
         return page.map(mapper::ClienteDbToClienteList);
     }
 
-    // Filtrado opcional
     @Override
-    public List<ClienteList> findByNombreContaining(String nombre) {
-        return clienteRepository.findAll().stream()
-                .filter(c -> c.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-                .map(mapper::ClienteDbToClienteList)
-                .collect(Collectors.toList());
+    public Page<ClienteList> getClientesByNombre(String nombre, Pageable pageable) {
+        Page<ClienteDb> page = clienteRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+        return page.map(mapper::ClienteDbToClienteList);
+    }
+
+    @Override
+    public Page<ClienteList> getClientesByEmail(String email, Pageable pageable) {
+        Page<ClienteDb> page = clienteRepository.findByEmailContainingIgnoreCase(email, pageable);
+        return page.map(mapper::ClienteDbToClienteList);
+    }
+
+    @Override
+    public Page<ClienteList> getClientesByTelefono(String telefono, Pageable pageable) {
+        Page<ClienteDb> page = clienteRepository.findByTelefonoContainingIgnoreCase(telefono, pageable);
+        return page.map(mapper::ClienteDbToClienteList);
     }
 
     // Update

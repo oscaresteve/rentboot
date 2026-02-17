@@ -1,13 +1,8 @@
 package com.oscaresteve.rentboot.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteEdit;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteList;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteView;
@@ -51,21 +47,43 @@ public class ClienteController {
   public ResponseEntity<Page<ClienteList>> getAllClientes(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
-      @RequestParam(defaultValue = "id,asc") String[] sort,
-      @RequestParam(required = false) String nombre
+      @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
-    Sort sortOrder = Sort.by(Sort.Direction.fromString(sort[1]), sort[0]);
-    Pageable pageable = PageRequest.of(page, size, sortOrder);
+    Pageable pageable = PaginationHelper.createPageable(page, size, sort);
+    return ResponseEntity.ok(clienteService.getAllClientes(pageable));
+  }
 
-    Page<ClienteList> result;
-    if (nombre != null && !nombre.isEmpty()) {
-      List<ClienteList> filtered = clienteService.findByNombreContaining(nombre);
-      result = new PageImpl<>(filtered, pageable, filtered.size());
-    } else {
-      result = clienteService.getAllClientes(pageable);
-    }
+  @GetMapping("/nombre/{nombre}")
+  public ResponseEntity<Page<ClienteList>> getClientesByNombre(
+      @PathVariable String nombre,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id,asc") String[] sort
+  ) {
+    Pageable pageable = PaginationHelper.createPageable(page, size, sort);
+    return ResponseEntity.ok(clienteService.getClientesByNombre(nombre, pageable));
+  }
 
-    return ResponseEntity.ok(result);
+  @GetMapping("/email/{email}")
+  public ResponseEntity<Page<ClienteList>> getClientesByEmail(
+      @PathVariable String email,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id,asc") String[] sort
+  ) {
+    Pageable pageable = PaginationHelper.createPageable(page, size, sort);
+    return ResponseEntity.ok(clienteService.getClientesByEmail(email, pageable));
+  }
+
+  @GetMapping("/telefono/{telefono}")
+  public ResponseEntity<Page<ClienteList>> getClientesByTelefono(
+      @PathVariable String telefono,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "id,asc") String[] sort
+  ) {
+    Pageable pageable = PaginationHelper.createPageable(page, size, sort);
+    return ResponseEntity.ok(clienteService.getClientesByTelefono(telefono, pageable));
   }
 
   // Update
