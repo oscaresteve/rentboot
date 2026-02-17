@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.srv;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,8 +17,8 @@ public interface CategoriaService {
 
   Page<CategoriaList> getAllCategorias(Pageable pageable);
 
-  // Filtrado opcional
-  List<CategoriaList> findByNombreContaining(String nombre);
+  // Filtrado
+  Page<CategoriaList> getCategoriasByNombre(String nombre, Pageable pageable);
 
   // Update
   CategoriaView updateCategoria(Long id, CategoriaEdit categoriaEdit);

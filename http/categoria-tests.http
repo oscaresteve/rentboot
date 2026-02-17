@@ -1,0 +1,111 @@
+@host = http://localhost:8090
+@baseUrl = {{host}}/api/categorias
+@categoriaId = 1
+@ts = {{$timestamp}}
+@dupNombre = CategoriaDuplicada{{ts}}
+
+### ------------------------------------------------------------
+### 1) Crear categoria (OK)
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Categoria Test {{ts}}",
+  "descripcion": "Descripcion categoria test"
+}
+
+### ------------------------------------------------------------
+### 2) Obtener categoria por id (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/{{categoriaId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 3) Listar categorias (paginacion + ordenacion)
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=nombre,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 4) Filtrar categorias por nombre (OK)
+### ------------------------------------------------------------
+GET {{baseUrl}}/nombre/Categoria?sort=nombre,asc&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 5) Actualizar categoria (OK)
+### ------------------------------------------------------------
+PUT {{baseUrl}}/{{categoriaId}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Categoria Test Actualizada {{ts}}",
+  "descripcion": "Descripcion actualizada"
+}
+
+### ------------------------------------------------------------
+### 6) Eliminar categoria (OK)
+### ------------------------------------------------------------
+DELETE {{baseUrl}}/{{categoriaId}} HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 7) Entidad no encontrada -> 404
+### ------------------------------------------------------------
+GET {{baseUrl}}/999999 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 8) Integridad (nombre unico duplicado) -> 409
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "{{dupNombre}}",
+  "descripcion": "Primera categoria"
+}
+
+###
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "{{dupNombre}}",
+  "descripcion": "Segunda categoria"
+}
+
+### ------------------------------------------------------------
+### 9) Datos de entrada invalidos -> 400
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "",
+  "descripcion": "invalido"
+}
+
+### ------------------------------------------------------------
+### 10) Error de validacion de campos -> 400 (nombre > 50)
+### ------------------------------------------------------------
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "123456789012345678901234567890123456789012345678901",
+  "descripcion": "nombre demasiado largo"
+}
+
+### ------------------------------------------------------------
+### 11) Excepcion de filtro (sort invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=nombre,invalido&page=0&size=5 HTTP/1.1
+Content-Type: application/json
+
+### ------------------------------------------------------------
+### 12) Excepcion de filtro (size invalido) -> 400
+### ------------------------------------------------------------
+GET {{baseUrl}}?sort=id,asc&page=0&size=0 HTTP/1.1
+Content-Type: application/json

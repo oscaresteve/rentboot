@@ -2,6 +2,8 @@ package com.oscaresteve.rentboot.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,6 @@ public interface CategoriaRepository extends JpaRepository<CategoriaDb, Long> {
 
   //Buscar por nombre
   Optional<CategoriaDb> findByNombre(String nombre);
+
+  Page<CategoriaDb> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);
 }

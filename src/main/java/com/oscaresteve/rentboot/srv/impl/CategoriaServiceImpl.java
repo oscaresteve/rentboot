@@ -1,8 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,13 +44,10 @@ public class CategoriaServiceImpl implements CategoriaService {
     return page.map(mapper::CategoriaDbToCategoriaList);
   }
 
-  // Filtrado opcional
   @Override
-  public List<CategoriaList> findByNombreContaining(String nombre) {
-    return categoriaRepository.findAll().stream()
-      .filter(c -> c.getNombre().toLowerCase().contains(nombre.toLowerCase()))
-      .map(mapper::CategoriaDbToCategoriaList)
-      .collect(Collectors.toList());
+  public Page<CategoriaList> getCategoriasByNombre(String nombre, Pageable pageable) {
+    Page<CategoriaDb> page = categoriaRepository.findByNombreContainingIgnoreCase(nombre, pageable);
+    return page.map(mapper::CategoriaDbToCategoriaList);
   }
 
   // Update
