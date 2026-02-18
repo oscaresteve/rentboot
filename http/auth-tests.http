@@ -1,18 +1,55 @@
-### Registro de usuario (rol por defecto ROLE_USER)
-POST http://localhost:8090/api/auth/register
+@host = http://localhost:8090
+@baseAuth = {{host}}/api/auth
+@ts = {{$timestamp}}
+@rolAdminId = 1
+@usernameUser = user.jwt.1771408728
+@passwordUser = user12345
+@usernameAdmin = admin.jwt.1771408775
+@passwordAdmin = admin12345
+
+### Registro de usuario ROLE_USER (por defecto)
+POST {{baseAuth}}/register
 Content-Type: application/json
 
 {
-  "username": "test",
-  "password": "test123",
+  "username": "{{usernameUser}}",
+  "password": "{{passwordUser}}",
   "enabled": true
 }
 
-### Login (obtiene JWT)
-POST http://localhost:8090/api/auth/login
+### Login USER (guardar token en variable global userToken)
+POST {{baseAuth}}/login
 Content-Type: application/json
 
 {
-  "username": "test",
-  "password": "test123"
+  "username": "{{usernameUser}}",
+  "password": "{{passwordUser}}"
 }
+
+> {%
+client.global.set("userToken", response.body.token);
+%}
+
+### Registro de usuario ROLE_ADMIN (requiere id del rol admin)
+POST {{baseAuth}}/register
+Content-Type: application/json
+
+{
+  "username": "{{usernameAdmin}}",
+  "password": "{{passwordAdmin}}",
+  "enabled": true,
+  "rolIds": [{{rolAdminId}}]
+}
+
+### Login ADMIN (guardar token en variable global adminToken)
+POST {{baseAuth}}/login
+Content-Type: application/json
+
+{
+  "username": "{{usernameAdmin}}",
+  "password": "{{passwordAdmin}}"
+}
+
+> {%
+client.global.set("adminToken", response.body.token);
+%}
