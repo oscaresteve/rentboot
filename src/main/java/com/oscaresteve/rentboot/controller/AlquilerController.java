@@ -26,6 +26,7 @@ import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerView;
 import com.oscaresteve.rentboot.srv.AlquilerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,7 +72,10 @@ public class AlquilerController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<AlquilerView> getAlquilerById(@PathVariable Long id) {
+  public ResponseEntity<AlquilerView> getAlquilerById(
+      @Parameter(description = "ID del alquiler", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     AlquilerView alquilerView = alquilerService.getAlquilerById(id);
     return ResponseEntity.ok(alquilerView);
   }
@@ -85,8 +89,11 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<AlquilerList>> getAllAlquileres(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -103,9 +110,13 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<AlquilerList>> getAlquileresByClienteId(
+      @Parameter(description = "ID del cliente", example = "1", required = true)
       @PathVariable Long clienteId,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -121,9 +132,13 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<AlquilerList>> getAlquileresByVehiculoId(
+      @Parameter(description = "ID del vehiculo", example = "1", required = true)
       @PathVariable Long vehiculoId,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -150,6 +165,7 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<List<AlquilerVehiculoStats>> getTopVehiculos(
+      @Parameter(description = "Cantidad maxima de vehiculos a retornar", example = "5")
       @RequestParam(defaultValue = "5") int limit
   ) {
     return ResponseEntity.ok(alquilerService.getTopVehiculos(limit));
@@ -164,6 +180,7 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<List<AlquilerClienteStats>> getTopClientes(
+      @Parameter(description = "Cantidad maxima de clientes a retornar", example = "10")
       @RequestParam(defaultValue = "10") int limit
   ) {
     return ResponseEntity.ok(alquilerService.getTopClientes(limit));
@@ -184,6 +201,7 @@ public class AlquilerController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<AlquilerView> updateAlquiler(
+      @Parameter(description = "ID del alquiler", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody AlquilerEdit alquilerEdit
   ) {
@@ -200,7 +218,10 @@ public class AlquilerController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteAlquiler(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteAlquiler(
+      @Parameter(description = "ID del alquiler", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     alquilerService.deleteAlquiler(id);
     return ResponseEntity.noContent().build();
   }

@@ -21,6 +21,7 @@ import com.oscaresteve.rentboot.model.dto.rol.RolView;
 import com.oscaresteve.rentboot.srv.RolService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,10 @@ public class RolController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<RolView> getRolById(@PathVariable Long id) {
+  public ResponseEntity<RolView> getRolById(
+      @Parameter(description = "ID del rol", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     RolView rolView = rolService.getRolById(id);
     return ResponseEntity.ok(rolView);
   }
@@ -80,8 +84,11 @@ public class RolController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<RolList>> getAllRoles(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -98,9 +105,13 @@ public class RolController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<RolList>> getRolesByNombre(
+      @Parameter(description = "Nombre o fragmento de nombre para filtrar roles", example = "ADMIN", required = true)
       @PathVariable String nombre,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -122,6 +133,7 @@ public class RolController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<RolView> updateRol(
+      @Parameter(description = "ID del rol", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody RolEdit rolEdit
   ) {
@@ -138,7 +150,10 @@ public class RolController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteRol(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteRol(
+      @Parameter(description = "ID del rol", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     rolService.deleteRol(id);
     return ResponseEntity.noContent().build();
   }

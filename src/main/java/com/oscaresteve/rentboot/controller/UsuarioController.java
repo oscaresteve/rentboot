@@ -21,6 +21,7 @@ import com.oscaresteve.rentboot.model.dto.usuario.UsuarioView;
 import com.oscaresteve.rentboot.srv.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,10 @@ public class UsuarioController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<UsuarioView> getUsuarioById(@PathVariable Long id) {
+  public ResponseEntity<UsuarioView> getUsuarioById(
+      @Parameter(description = "ID del usuario", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     UsuarioView usuarioView = usuarioService.getUsuarioById(id);
     return ResponseEntity.ok(usuarioView);
   }
@@ -80,8 +84,11 @@ public class UsuarioController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<UsuarioList>> getAllUsuarios(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -98,9 +105,13 @@ public class UsuarioController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<UsuarioList>> getUsuariosByUsername(
+      @Parameter(description = "Username para filtrar usuarios", example = "user.demo", required = true)
       @PathVariable String username,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -122,6 +133,7 @@ public class UsuarioController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<UsuarioView> updateUsuario(
+      @Parameter(description = "ID del usuario", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody UsuarioEdit usuarioEdit
   ) {
@@ -138,7 +150,10 @@ public class UsuarioController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteUsuario(
+      @Parameter(description = "ID del usuario", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     usuarioService.deleteUsuario(id);
     return ResponseEntity.noContent().build();
   }

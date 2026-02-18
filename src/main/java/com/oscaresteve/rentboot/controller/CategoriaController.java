@@ -21,6 +21,7 @@ import com.oscaresteve.rentboot.model.dto.categoria.CategoriaView;
 import com.oscaresteve.rentboot.srv.CategoriaService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,10 @@ public class CategoriaController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<CategoriaView> getCategoriaById(@PathVariable Long id) {
+  public ResponseEntity<CategoriaView> getCategoriaById(
+      @Parameter(description = "ID de la categoria", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     CategoriaView categoriaView = categoriaService.getCategoriaById(id);
     return ResponseEntity.ok(categoriaView);
   }
@@ -80,8 +84,11 @@ public class CategoriaController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<CategoriaList>> getAllCategorias(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -98,9 +105,13 @@ public class CategoriaController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<CategoriaList>> getCategoriasByNombre(
+      @Parameter(description = "Nombre o fragmento de nombre para filtrar categorias", example = "SUV", required = true)
       @PathVariable String nombre,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -122,6 +133,7 @@ public class CategoriaController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<CategoriaView> updateCategoria(
+      @Parameter(description = "ID de la categoria", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody CategoriaEdit categoriaEdit
   ) {
@@ -138,7 +150,10 @@ public class CategoriaController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteCategoria(
+      @Parameter(description = "ID de la categoria", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     categoriaService.deleteCategoria(id);
     return ResponseEntity.noContent().build();
   }

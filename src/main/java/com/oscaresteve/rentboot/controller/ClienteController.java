@@ -21,6 +21,7 @@ import com.oscaresteve.rentboot.model.dto.cliente.ClienteView;
 import com.oscaresteve.rentboot.srv.ClienteService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,10 @@ public class ClienteController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<ClienteView> getClienteById(@PathVariable Long id) {
+  public ResponseEntity<ClienteView> getClienteById(
+      @Parameter(description = "ID del cliente", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     ClienteView clienteView = clienteService.getClienteById(id);
     return ResponseEntity.ok(clienteView);
   }
@@ -80,8 +84,11 @@ public class ClienteController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<ClienteList>> getAllClientes(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -98,9 +105,13 @@ public class ClienteController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<ClienteList>> getClientesByNombre(
+      @Parameter(description = "Nombre o fragmento de nombre para filtrar clientes", example = "Ana", required = true)
       @PathVariable String nombre,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -116,9 +127,13 @@ public class ClienteController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<ClienteList>> getClientesByEmail(
+      @Parameter(description = "Email del cliente para filtrar", example = "ana@mail.com", required = true)
       @PathVariable String email,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -134,9 +149,13 @@ public class ClienteController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<ClienteList>> getClientesByTelefono(
+      @Parameter(description = "Telefono del cliente para filtrar", example = "600123123", required = true)
       @PathVariable String telefono,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -158,6 +177,7 @@ public class ClienteController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<ClienteView> updateCliente(
+      @Parameter(description = "ID del cliente", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody ClienteEdit clienteEdit
   ) {
@@ -174,7 +194,10 @@ public class ClienteController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteCliente(
+      @Parameter(description = "ID del cliente", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     clienteService.deleteCliente(id);
     return ResponseEntity.noContent().build();
   }

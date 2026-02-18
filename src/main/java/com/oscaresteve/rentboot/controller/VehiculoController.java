@@ -21,6 +21,7 @@ import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoView;
 import com.oscaresteve.rentboot.srv.VehiculoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,7 +67,10 @@ public class VehiculoController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<VehiculoView> getVehiculoById(@PathVariable Long id) {
+  public ResponseEntity<VehiculoView> getVehiculoById(
+      @Parameter(description = "ID del vehiculo", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     VehiculoView vehiculoView = vehiculoService.getVehiculoById(id);
     return ResponseEntity.ok(vehiculoView);
   }
@@ -80,8 +84,11 @@ public class VehiculoController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<VehiculoList>> getAllVehiculos(
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -98,9 +105,13 @@ public class VehiculoController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<Page<VehiculoList>> getVehiculosByDisponible(
+      @Parameter(description = "Estado de disponibilidad del vehiculo", example = "true", required = true)
       @PathVariable Boolean disponible,
+      @Parameter(description = "Numero de pagina (base 0)", example = "0")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Tamano de pagina", example = "10")
       @RequestParam(defaultValue = "10") int size,
+      @Parameter(description = "Ordenacion en formato campo,direccion (asc|desc). Repetible", example = "id,asc")
       @RequestParam(defaultValue = "id,asc") String[] sort
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
@@ -122,6 +133,7 @@ public class VehiculoController {
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
   public ResponseEntity<VehiculoView> updateVehiculo(
+      @Parameter(description = "ID del vehiculo", example = "1", required = true)
       @PathVariable Long id,
       @Valid @RequestBody VehiculoEdit vehiculoEdit
   ) {
@@ -138,7 +150,10 @@ public class VehiculoController {
           @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
       @ApiResponse(responseCode = "500", description = "Error interno del servidor")
   })
-  public ResponseEntity<Void> deleteVehiculo(@PathVariable Long id) {
+  public ResponseEntity<Void> deleteVehiculo(
+      @Parameter(description = "ID del vehiculo", example = "1", required = true)
+      @PathVariable Long id
+  ) {
     vehiculoService.deleteVehiculo(id);
     return ResponseEntity.noContent().build();
   }
