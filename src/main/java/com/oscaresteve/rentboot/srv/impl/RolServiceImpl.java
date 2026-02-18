@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,10 +20,13 @@ public class RolServiceImpl implements RolService {
   private static final String ROLE_ADMIN = "ROLE_ADMIN";
   private static final String ROLE_USER = "ROLE_USER";
 
-  @Autowired
-  private RolRepository rolRepository;
+  private final RolRepository rolRepository;
+  private final RolMapper mapper;
 
-  private final RolMapper mapper = RolMapper.INSTANCE;
+  public RolServiceImpl(RolRepository rolRepository, RolMapper mapper) {
+    this.rolRepository = rolRepository;
+    this.mapper = mapper;
+  }
 
   // Create
   @Override

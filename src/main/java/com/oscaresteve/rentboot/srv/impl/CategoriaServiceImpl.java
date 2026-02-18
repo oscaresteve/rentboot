@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,13 @@ import com.oscaresteve.rentboot.srv.mapper.CategoriaMapper;
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 
-  @Autowired
-  private CategoriaRepository categoriaRepository;
+  private final CategoriaRepository categoriaRepository;
+  private final CategoriaMapper mapper;
 
-  private final CategoriaMapper mapper = CategoriaMapper.INSTANCE;
+  public CategoriaServiceImpl(CategoriaRepository categoriaRepository, CategoriaMapper mapper) {
+    this.categoriaRepository = categoriaRepository;
+    this.mapper = mapper;
+  }
 
   // Create
   @Override

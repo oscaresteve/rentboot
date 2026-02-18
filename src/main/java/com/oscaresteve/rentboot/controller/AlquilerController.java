@@ -2,7 +2,6 @@ package com.oscaresteve.rentboot.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +38,11 @@ import jakarta.validation.Valid;
 @Tag(name = "Alquileres", description = "Operaciones CRUD y de filtrado para alquileres")
 public class AlquilerController {
 
-  @Autowired
-  private AlquilerService alquilerService;
+  private final AlquilerService alquilerService;
+
+  public AlquilerController(AlquilerService alquilerService) {
+    this.alquilerService = alquilerService;
+  }
 
   // Create
   @PostMapping

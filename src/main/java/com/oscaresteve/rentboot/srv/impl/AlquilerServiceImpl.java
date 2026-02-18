@@ -2,7 +2,6 @@ package com.oscaresteve.rentboot.srv.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,21 +22,36 @@ import com.oscaresteve.rentboot.repository.AlquilerRepository;
 import com.oscaresteve.rentboot.repository.ClienteRepository;
 import com.oscaresteve.rentboot.repository.VehiculoRepository;
 import com.oscaresteve.rentboot.srv.AlquilerService;
+import com.oscaresteve.rentboot.srv.factory.AlquilerFactory;
 import com.oscaresteve.rentboot.srv.mapper.AlquilerMapper;
+import com.oscaresteve.rentboot.srv.strategy.alquiler.AlquilerFiltroStrategyFactory;
+import com.oscaresteve.rentboot.srv.strategy.alquiler.AlquilerFiltroTipo;
 
 @Service
 public class AlquilerServiceImpl implements AlquilerService {
 
-  @Autowired
-  private AlquilerRepository alquilerRepository;
+  private final AlquilerRepository alquilerRepository;
+  private final ClienteRepository clienteRepository;
+  private final VehiculoRepository vehiculoRepository;
+  private final AlquilerFactory alquilerFactory;
+  private final AlquilerFiltroStrategyFactory filtroStrategyFactory;
+  private final AlquilerMapper mapper;
 
-  @Autowired
-  private ClienteRepository clienteRepository;
-
-  @Autowired
-  private VehiculoRepository vehiculoRepository;
-
-  private final AlquilerMapper mapper = AlquilerMapper.INSTANCE;
+  public AlquilerServiceImpl(
+    AlquilerRepository alquilerRepository,
+    ClienteRepository clienteRepository,
+    VehiculoRepository vehiculoRepository,
+    AlquilerFactory alquilerFactory,
+    AlquilerFiltroStrategyFactory filtroStrategyFactory,
+    AlquilerMapper mapper
+  ) {
+    this.alquilerRepository = alquilerRepository;
+    this.clienteRepository = clienteRepository;
+    this.vehiculoRepository = vehiculoRepository;
+    this.alquilerFactory = alquilerFactory;
+    this.filtroStrategyFactory = filtroStrategyFactory;
+    this.mapper = mapper;
+  }
 
   // Create
   @Override
@@ -47,9 +61,7 @@ public class AlquilerServiceImpl implements AlquilerService {
     VehiculoDb vehiculoDb = vehiculoRepository.findById(alquilerEdit.getVehiculoId())
       .orElseThrow(() -> new EntityNotFoundException("VEHICULO_NOT_FOUND", "Vehiculo no encontrado"));
 
-    AlquilerDb alquilerDb = mapper.AlquilerEditToAlquilerDb(alquilerEdit);
-    alquilerDb.setCliente(clienteDb);
-    alquilerDb.setVehiculo(vehiculoDb);
+    AlquilerDb alquilerDb = alquilerFactory.create(alquilerEdit, clienteDb, vehiculoDb);
     alquilerDb = alquilerRepository.save(alquilerDb);
     return mapper.AlquilerDbToAlquilerView(alquilerDb);
   }
@@ -71,13 +83,16 @@ public class AlquilerServiceImpl implements AlquilerService {
   // Filtrado
   @Override
   public Page<AlquilerList> getAlquileresByClienteId(Long clienteId, Pageable pageable) {
-    Page<AlquilerDb> page = alquilerRepository.findByClienteId(clienteId, pageable);
-    return page.map(mapper::AlquilerDbToAlquilerList);
+    return getAlquileresFiltrados(AlquilerFiltroTipo.CLIENTE, clienteId, pageable);
   }
 
   @Override
   public Page<AlquilerList> getAlquileresByVehiculoId(Long vehiculoId, Pageable pageable) {
-    Page<AlquilerDb> page = alquilerRepository.findByVehiculoId(vehiculoId, pageable);
+    return getAlquileresFiltrados(AlquilerFiltroTipo.VEHICULO, vehiculoId, pageable);
+  }
+
+  private Page<AlquilerList> getAlquileresFiltrados(AlquilerFiltroTipo filtroTipo, Long id, Pageable pageable) {
+    Page<AlquilerDb> page = filtroStrategyFactory.getStrategy(filtroTipo).filtrar(id, pageable);
     return page.map(mapper::AlquilerDbToAlquilerList);
   }
 

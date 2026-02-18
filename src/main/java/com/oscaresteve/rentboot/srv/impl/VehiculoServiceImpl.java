@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.srv.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,13 +18,19 @@ import com.oscaresteve.rentboot.srv.mapper.VehiculoMapper;
 @Service
 public class VehiculoServiceImpl implements VehiculoService {
 
-  @Autowired
-  private VehiculoRepository vehiculoRepository;
+  private final VehiculoRepository vehiculoRepository;
+  private final CategoriaRepository categoriaRepository;
+  private final VehiculoMapper mapper;
 
-  @Autowired
-  private CategoriaRepository categoriaRepository;
-
-  private final VehiculoMapper mapper = VehiculoMapper.INSTANCE;
+  public VehiculoServiceImpl(
+    VehiculoRepository vehiculoRepository,
+    CategoriaRepository categoriaRepository,
+    VehiculoMapper mapper
+  ) {
+    this.vehiculoRepository = vehiculoRepository;
+    this.categoriaRepository = categoriaRepository;
+    this.mapper = mapper;
+  }
 
   // Create
   @Override

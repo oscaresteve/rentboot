@@ -1,7 +1,7 @@
 package com.oscaresteve.rentboot.security.srv.impl;
 
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,20 +34,22 @@ public class AuthServiceImpl implements AuthService {
   private final UsuarioRepository usuarioRepository;
   private final RolRepository rolRepository;
   private final PasswordEncoder passwordEncoder;
-  private final UsuarioMapper usuarioMapper = UsuarioMapper.INSTANCE;
+  private final UsuarioMapper usuarioMapper;
 
   public AuthServiceImpl(
     AuthenticationManager authenticationManager,
     JwtService jwtService,
     UsuarioRepository usuarioRepository,
     RolRepository rolRepository,
-    PasswordEncoder passwordEncoder
+    PasswordEncoder passwordEncoder,
+    UsuarioMapper usuarioMapper
   ) {
     this.authenticationManager = authenticationManager;
     this.jwtService = jwtService;
     this.usuarioRepository = usuarioRepository;
     this.rolRepository = rolRepository;
     this.passwordEncoder = passwordEncoder;
+    this.usuarioMapper = usuarioMapper;
   }
 
   @Override

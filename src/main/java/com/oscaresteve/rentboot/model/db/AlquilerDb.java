@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,8 +21,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class AlquilerDb {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -35,12 +37,12 @@ public class AlquilerDb {
   @Column(name = "precio_total", nullable = false)
   private BigDecimal precioTotal;
 
-  //Muchos alquileres pueden tener un cliente
+  // Muchos alquileres pueden tener un cliente
   @ManyToOne
   @JoinColumn(name = "cliente_id", nullable = false)
   private ClienteDb cliente;
 
-  //Muchos alquileres pueden tener un vehiculo
+  // Muchos alquileres pueden tener un vehiculo
   @ManyToOne
   @JoinColumn(name = "vehiculo_id", nullable = false)
   private VehiculoDb vehiculo;

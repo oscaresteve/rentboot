@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.exception.CustomErrorResponse;
+import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoEdit;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoList;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoView;
@@ -34,8 +33,11 @@ import jakarta.validation.Valid;
 @Tag(name = "Vehiculos", description = "Operaciones CRUD y de filtrado para vehiculos")
 public class VehiculoController {
 
-  @Autowired
-  private VehiculoService vehiculoService;
+  private final VehiculoService vehiculoService;
+
+  public VehiculoController(VehiculoService vehiculoService) {
+    this.vehiculoService = vehiculoService;
+  }
 
   // Create
   @PostMapping

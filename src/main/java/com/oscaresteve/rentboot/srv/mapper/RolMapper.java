@@ -3,7 +3,6 @@ package com.oscaresteve.rentboot.srv.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
 
 import com.oscaresteve.rentboot.model.db.RolDb;
 import com.oscaresteve.rentboot.model.dto.rol.RolEdit;
@@ -12,9 +11,6 @@ import com.oscaresteve.rentboot.model.dto.rol.RolView;
 
 @Mapper
 public interface RolMapper {
-
-  RolMapper INSTANCE = Mappers.getMapper(RolMapper.class);
-
   // Edit to Db
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "usuarios", ignore = true)
@@ -34,3 +30,6 @@ public interface RolMapper {
   @Mapping(target = "usuarios", ignore = true)
   void updateRolDbFromRolEdit(RolEdit rolEdit, @MappingTarget RolDb rolDb);
 }
+
+
+

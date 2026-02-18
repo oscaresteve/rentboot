@@ -3,7 +3,6 @@ package com.oscaresteve.rentboot.srv.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
 
 import com.oscaresteve.rentboot.model.db.ClienteDb;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteEdit;
@@ -13,9 +12,6 @@ import com.oscaresteve.rentboot.model.dto.cliente.ClienteView;
 
 @Mapper
 public interface ClienteMapper {
-
-    ClienteMapper INSTANCE = Mappers.getMapper(ClienteMapper.class);
-
     //Edit to Db
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fechaRegistro", ignore = true)
@@ -37,3 +33,6 @@ public interface ClienteMapper {
     @Mapping(target = "alquileres", ignore = true)
     void updateClienteDbFromClienteEdit(ClienteEdit clienteEdit, @MappingTarget ClienteDb clienteDb);
 }
+
+
+

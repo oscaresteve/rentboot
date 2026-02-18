@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.exception.CustomErrorResponse;
+import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioEdit;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioList;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioView;
@@ -34,8 +33,11 @@ import jakarta.validation.Valid;
 @Tag(name = "Usuarios", description = "Operaciones CRUD y de filtrado para usuarios")
 public class UsuarioController {
 
-  @Autowired
-  private UsuarioService usuarioService;
+  private final UsuarioService usuarioService;
+
+  public UsuarioController(UsuarioService usuarioService) {
+    this.usuarioService = usuarioService;
+  }
 
   // Create
   @PostMapping

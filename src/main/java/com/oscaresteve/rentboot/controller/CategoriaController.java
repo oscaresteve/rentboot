@@ -1,6 +1,5 @@
 package com.oscaresteve.rentboot.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.exception.CustomErrorResponse;
+import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.model.dto.categoria.CategoriaEdit;
 import com.oscaresteve.rentboot.model.dto.categoria.CategoriaList;
 import com.oscaresteve.rentboot.model.dto.categoria.CategoriaView;
@@ -34,8 +33,11 @@ import jakarta.validation.Valid;
 @Tag(name = "Categorias", description = "Operaciones CRUD y de filtrado para categorias")
 public class CategoriaController {
 
-  @Autowired
-  private CategoriaService categoriaService;
+  private final CategoriaService categoriaService;
+
+  public CategoriaController(CategoriaService categoriaService) {
+    this.categoriaService = categoriaService;
+  }
 
   // Create
   @PostMapping

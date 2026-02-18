@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 import com.oscaresteve.rentboot.model.db.RolDb;
 import com.oscaresteve.rentboot.model.db.UsuarioDb;
@@ -17,9 +16,6 @@ import com.oscaresteve.rentboot.model.dto.usuario.UsuarioView;
 
 @Mapper
 public interface UsuarioMapper {
-
-  UsuarioMapper INSTANCE = Mappers.getMapper(UsuarioMapper.class);
-
   // Edit to Db
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "roles", source = "rolIds", qualifiedByName = "rolesFromIds")
@@ -63,3 +59,6 @@ public interface UsuarioMapper {
       .collect(Collectors.toSet());
   }
 }
+
+
+

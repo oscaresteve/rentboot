@@ -3,7 +3,6 @@ package com.oscaresteve.rentboot.srv.impl;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,16 +23,22 @@ import com.oscaresteve.rentboot.srv.mapper.UsuarioMapper;
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-  @Autowired
-  private UsuarioRepository usuarioRepository;
+  private final UsuarioRepository usuarioRepository;
+  private final RolRepository rolRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final UsuarioMapper mapper;
 
-  @Autowired
-  private RolRepository rolRepository;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  private final UsuarioMapper mapper = UsuarioMapper.INSTANCE;
+  public UsuarioServiceImpl(
+    UsuarioRepository usuarioRepository,
+    RolRepository rolRepository,
+    PasswordEncoder passwordEncoder,
+    UsuarioMapper mapper
+  ) {
+    this.usuarioRepository = usuarioRepository;
+    this.rolRepository = rolRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.mapper = mapper;
+  }
 
   // Create
   @Override
