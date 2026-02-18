@@ -1,16 +1,23 @@
 package com.oscaresteve.rentboot.srv.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.oscaresteve.rentboot.exception.EntityNotFoundException;
+import com.oscaresteve.rentboot.exception.FiltroException;
 import com.oscaresteve.rentboot.model.db.AlquilerDb;
 import com.oscaresteve.rentboot.model.db.ClienteDb;
 import com.oscaresteve.rentboot.model.db.VehiculoDb;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerCategoriaStats;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerClienteStats;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerEdit;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerList;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerVehiculoStats;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerView;
 import com.oscaresteve.rentboot.repository.AlquilerRepository;
 import com.oscaresteve.rentboot.repository.ClienteRepository;
@@ -72,6 +79,28 @@ public class AlquilerServiceImpl implements AlquilerService {
   public Page<AlquilerList> getAlquileresByVehiculoId(Long vehiculoId, Pageable pageable) {
     Page<AlquilerDb> page = alquilerRepository.findByVehiculoId(vehiculoId, pageable);
     return page.map(mapper::AlquilerDbToAlquilerList);
+  }
+
+  // Agregaciones
+  @Override
+  public List<AlquilerCategoriaStats> getStatsByCategoria() {
+    return alquilerRepository.getStatsByCategoria();
+  }
+
+  @Override
+  public List<AlquilerVehiculoStats> getTopVehiculos(int limit) {
+    if (limit <= 0) {
+      throw new FiltroException("FILTER_ERROR", "El parametro limit debe ser mayor que 0");
+    }
+    return alquilerRepository.getTopVehiculos(PageRequest.of(0, limit));
+  }
+
+  @Override
+  public List<AlquilerClienteStats> getTopClientes(int limit) {
+    if (limit <= 0) {
+      throw new FiltroException("FILTER_ERROR", "El parametro limit debe ser mayor que 0");
+    }
+    return alquilerRepository.getTopClientes(PageRequest.of(0, limit));
   }
 
   // Update

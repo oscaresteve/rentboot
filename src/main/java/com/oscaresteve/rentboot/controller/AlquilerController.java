@@ -1,5 +1,7 @@
 package com.oscaresteve.rentboot.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oscaresteve.rentboot.helper.PaginationHelper;
 import com.oscaresteve.rentboot.exception.CustomErrorResponse;
+import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerCategoriaStats;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerClienteStats;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerEdit;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerList;
+import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerVehiculoStats;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerView;
 import com.oscaresteve.rentboot.srv.AlquilerService;
 
@@ -121,6 +126,45 @@ public class AlquilerController {
   ) {
     Pageable pageable = PaginationHelper.createPageable(page, size, sort);
     return ResponseEntity.ok(alquilerService.getAlquileresByVehiculoId(vehiculoId, pageable));
+  }
+
+  // Agregaciones
+  @GetMapping("/stats/categoria")
+  @Operation(summary = "Estadisticas por categoria", description = "Retorna conteo, suma y promedio de alquileres agrupados por categoria")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Estadisticas por categoria obtenidas correctamente"),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
+  public ResponseEntity<List<AlquilerCategoriaStats>> getStatsByCategoria() {
+    return ResponseEntity.ok(alquilerService.getStatsByCategoria());
+  }
+
+  @GetMapping("/stats/vehiculo/top")
+  @Operation(summary = "Top vehiculos por alquileres", description = "Retorna los vehiculos con mayor cantidad de alquileres")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Top de vehiculos obtenido correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametro limit invalido", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
+  public ResponseEntity<List<AlquilerVehiculoStats>> getTopVehiculos(
+      @RequestParam(defaultValue = "5") int limit
+  ) {
+    return ResponseEntity.ok(alquilerService.getTopVehiculos(limit));
+  }
+
+  @GetMapping("/stats/clientes/top")
+  @Operation(summary = "Top clientes por alquileres", description = "Retorna los clientes con mayor cantidad de alquileres y su gasto")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Top de clientes obtenido correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametro limit invalido", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
+  public ResponseEntity<List<AlquilerClienteStats>> getTopClientes(
+      @RequestParam(defaultValue = "10") int limit
+  ) {
+    return ResponseEntity.ok(alquilerService.getTopClientes(limit));
   }
 
   // Update
