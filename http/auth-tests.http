@@ -1,10 +1,8 @@
-@host = http://localhost:8090
+﻿@host = http://localhost:8090
 @baseAuth = {{host}}/api/auth
-@ts = {{$timestamp}}
-@rolAdminId = 1
-@usernameUser = user.jwt.1771408728
+@usernameUser = user.jwt
 @passwordUser = user12345
-@usernameAdmin = admin.jwt.1771408775
+@usernameAdmin = admin.jwt
 @passwordAdmin = admin12345
 
 ### Registro de usuario ROLE_USER (por defecto)
@@ -30,7 +28,11 @@ Content-Type: application/json
 client.global.set("userToken", response.body.token);
 %}
 
-### Registro de usuario ROLE_ADMIN (requiere id del rol admin)
+### Registro de usuario para pruebas "ADMIN" (register ignora rolIds)
+
+## NOTA: /api/auth/register no procesa "rolIds" del body (no existe en RegisterRequest).
+## Siempre asigna el rol por defecto ROLE_USER en AuthServiceImpl.
+## Si necesitas probar flujos ADMIN, cambia la tabla usuario_rol manualmente o usa un usuario ADMIN existente.
 POST {{baseAuth}}/register
 Content-Type: application/json
 
@@ -38,7 +40,6 @@ Content-Type: application/json
   "username": "{{usernameAdmin}}",
   "password": "{{passwordAdmin}}",
   "enabled": true,
-  "rolIds": [{{rolAdminId}}]
 }
 
 ### Login ADMIN (guardar token en variable global adminToken)
@@ -53,3 +54,4 @@ Content-Type: application/json
 > {%
 client.global.set("adminToken", response.body.token);
 %}
+

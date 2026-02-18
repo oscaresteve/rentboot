@@ -1,14 +1,11 @@
-@host = http://localhost:8090
+﻿@host = http://localhost:8090
 @api = {{host}}/api
-@ts = {{$timestamp}}
-@rolAdminId = 1
-@testCategoria = Cat.Seguridad.{{ts}}
-@userUsername = user.seg.1771408872
+@userUsername = user.auth
 @userPassword = user12345
-@adminUsername = admin.seg.1771408922
+@adminUsername = admin.auth
 @adminPassword = admin12345
-@userToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyLnNlZy4xNzcxNDA4ODcyIiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlhdCI6MTc3MTQxMDA4OCwiZXhwIjoxNzcxNDEzNjg4fQ.mf2_r4M1lsqOJjszIBR5BSFSI_eQh6A0beEAbypjQi4
-@adminToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbi5zZWcuMTc3MTQwODkyMiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWF0IjoxNzcxNDEwMzYwLCJleHAiOjE3NzE0MTM5NjB9.DFqt5vw6wLcH9MwNhkoSoXa7ijbTEZDL_gmGF1DADz8
+@userToken = 
+@adminToken = 
 
 ### 0) Acceso sin token -> 401
 GET {{api}}/categorias
@@ -24,7 +21,11 @@ Content-Type: application/json
   "enabled": true
 }
 
-### 2) Registro ADMIN (ajusta rolAdminId si en tu BD no es 1)
+### 2) Registro para pruebas "ADMIN" (register ignora rolIds)
+
+## NOTA: /api/auth/register no procesa "rolIds" del body (no existe en RegisterRequest).
+## Siempre asigna el rol por defecto ROLE_USER en AuthServiceImpl.
+## Si necesitas probar flujos ADMIN, cambia la tabla usuario_rol manualmente o usa un usuario ADMIN existente.
 POST {{api}}/auth/register
 Content-Type: application/json
 
@@ -32,7 +33,6 @@ Content-Type: application/json
   "username": "{{adminUsername}}",
   "password": "{{adminPassword}}",
   "enabled": true,
-  "rolIds": [{{rolAdminId}}]
 }
 
 ### 3) Login USER y guardar token global userToken
@@ -72,7 +72,7 @@ Authorization: Bearer {{userToken}}
 Content-Type: application/json
 
 {
-  "nombre": "{{testCategoria}}",
+  "nombre": "Test Categoria",
   "descripcion": "Debe fallar con ROLE_USER"
 }
 
@@ -82,7 +82,7 @@ Authorization: Bearer {{adminToken}}
 Content-Type: application/json
 
 {
-  "nombre": "{{testCategoria}}",
+  "nombre": "Test Categoria",
   "descripcion": "Creada por ROLE_ADMIN"
 }
 
@@ -122,3 +122,4 @@ Content-Type: application/json
   "username": "no-existe",
   "password": "wrong-pass"
 }
+
