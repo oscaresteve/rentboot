@@ -12,7 +12,7 @@ import com.oscaresteve.rentboot.model.db.CategoriaDb;
 @Repository
 public interface CategoriaRepository extends JpaRepository<CategoriaDb, Long> {
 
-  //Buscar por nombre
+  // Filtrado
   Optional<CategoriaDb> findByNombre(String nombre);
 
   Page<CategoriaDb> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);

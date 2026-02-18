@@ -12,7 +12,7 @@ import com.oscaresteve.rentboot.model.db.ClienteDb;
 @Repository
 public interface ClienteRepository extends JpaRepository<ClienteDb, Long>{
   
-  //Buscar por email
+  // Filtrado
   Optional<ClienteDb> findByEmail(String email);
 
   Page<ClienteDb> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);

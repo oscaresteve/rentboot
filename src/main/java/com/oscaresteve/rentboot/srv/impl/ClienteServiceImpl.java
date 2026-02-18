@@ -44,6 +44,7 @@ public class ClienteServiceImpl implements ClienteService {
         return page.map(mapper::ClienteDbToClienteList);
     }
 
+    // Filtrado
     @Override
     public Page<ClienteList> getClientesByNombre(String nombre, Pageable pageable) {
         Page<ClienteDb> page = clienteRepository.findByNombreContainingIgnoreCase(nombre, pageable);

@@ -12,7 +12,7 @@ import com.oscaresteve.rentboot.model.db.RolDb;
 @Repository
 public interface RolRepository extends JpaRepository<RolDb, Long> {
 
-  //Buscar por nombre
+  // Filtrado
   Optional<RolDb> findByNombre(String nombre);
 
   Page<RolDb> findByNombreContainingIgnoreCase(String nombre, Pageable pageable);

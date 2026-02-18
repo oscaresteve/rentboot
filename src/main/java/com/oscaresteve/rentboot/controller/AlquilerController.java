@@ -29,12 +29,14 @@ public class AlquilerController {
   @Autowired
   private AlquilerService alquilerService;
 
+  // Create
   @PostMapping
   public ResponseEntity<AlquilerView> createAlquiler(@Valid @RequestBody AlquilerEdit alquilerEdit) {
     AlquilerView created = alquilerService.createAlquiler(alquilerEdit);
     return ResponseEntity.ok(created);
   }
 
+  // Read
   @GetMapping("/{id}")
   public ResponseEntity<AlquilerView> getAlquilerById(@PathVariable Long id) {
     AlquilerView alquilerView = alquilerService.getAlquilerById(id);
@@ -51,6 +53,7 @@ public class AlquilerController {
     return ResponseEntity.ok(alquilerService.getAllAlquileres(pageable));
   }
 
+  // Filtrado
   @GetMapping("/cliente/{clienteId}")
   public ResponseEntity<Page<AlquilerList>> getAlquileresByClienteId(
       @PathVariable Long clienteId,
@@ -73,6 +76,7 @@ public class AlquilerController {
     return ResponseEntity.ok(alquilerService.getAlquileresByVehiculoId(vehiculoId, pageable));
   }
 
+  // Update
   @PutMapping("/{id}")
   public ResponseEntity<AlquilerView> updateAlquiler(
       @PathVariable Long id,
@@ -82,6 +86,7 @@ public class AlquilerController {
     return ResponseEntity.ok(updated);
   }
 
+  // Delete
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteAlquiler(@PathVariable Long id) {
     alquilerService.deleteAlquiler(id);

@@ -29,12 +29,14 @@ public class CategoriaController {
   @Autowired
   private CategoriaService categoriaService;
 
+  // Create
   @PostMapping
   public ResponseEntity<CategoriaView> createCategoria(@Valid @RequestBody CategoriaEdit categoriaEdit) {
     CategoriaView created = categoriaService.createCategoria(categoriaEdit);
     return ResponseEntity.ok(created);
   }
 
+  // Read
   @GetMapping("/{id}")
   public ResponseEntity<CategoriaView> getCategoriaById(@PathVariable Long id) {
     CategoriaView categoriaView = categoriaService.getCategoriaById(id);
@@ -51,6 +53,7 @@ public class CategoriaController {
     return ResponseEntity.ok(categoriaService.getAllCategorias(pageable));
   }
 
+  // Filtrado
   @GetMapping("/nombre/{nombre}")
   public ResponseEntity<Page<CategoriaList>> getCategoriasByNombre(
       @PathVariable String nombre,
@@ -62,6 +65,7 @@ public class CategoriaController {
     return ResponseEntity.ok(categoriaService.getCategoriasByNombre(nombre, pageable));
   }
 
+  // Update
   @PutMapping("/{id}")
   public ResponseEntity<CategoriaView> updateCategoria(
       @PathVariable Long id,
@@ -71,6 +75,7 @@ public class CategoriaController {
     return ResponseEntity.ok(updated);
   }
 
+  // Delete
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
     categoriaService.deleteCategoria(id);

@@ -29,12 +29,14 @@ public class RolController {
   @Autowired
   private RolService rolService;
 
+  // Create
   @PostMapping
   public ResponseEntity<RolView> createRol(@Valid @RequestBody RolEdit rolEdit) {
     RolView created = rolService.createRol(rolEdit);
     return ResponseEntity.ok(created);
   }
 
+  // Read
   @GetMapping("/{id}")
   public ResponseEntity<RolView> getRolById(@PathVariable Long id) {
     RolView rolView = rolService.getRolById(id);
@@ -51,6 +53,7 @@ public class RolController {
     return ResponseEntity.ok(rolService.getAllRoles(pageable));
   }
 
+  // Filtrado
   @GetMapping("/nombre/{nombre}")
   public ResponseEntity<Page<RolList>> getRolesByNombre(
       @PathVariable String nombre,
@@ -62,6 +65,7 @@ public class RolController {
     return ResponseEntity.ok(rolService.getRolesByNombre(nombre, pageable));
   }
 
+  // Update
   @PutMapping("/{id}")
   public ResponseEntity<RolView> updateRol(
       @PathVariable Long id,
@@ -71,6 +75,7 @@ public class RolController {
     return ResponseEntity.ok(updated);
   }
 
+  // Delete
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteRol(@PathVariable Long id) {
     rolService.deleteRol(id);

@@ -12,7 +12,7 @@ import com.oscaresteve.rentboot.model.db.UsuarioDb;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioDb, Long> {
 
-  //Buscar por username
+  // Filtrado
   Optional<UsuarioDb> findByUsername(String username);
 
   Page<UsuarioDb> findByUsernameContainingIgnoreCase(String username, Pageable pageable);

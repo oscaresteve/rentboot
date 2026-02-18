@@ -56,6 +56,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     return page.map(mapper::UsuarioDbToUsuarioList);
   }
 
+  // Filtrado
   @Override
   public Page<UsuarioList> getUsuariosByUsername(String username, Pageable pageable) {
     Page<UsuarioDb> page = usuarioRepository.findByUsernameContainingIgnoreCase(username, pageable);
@@ -92,4 +93,3 @@ public class UsuarioServiceImpl implements UsuarioService {
     return roles;
   }
 }
-

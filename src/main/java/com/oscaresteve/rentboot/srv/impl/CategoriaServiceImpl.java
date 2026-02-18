@@ -44,6 +44,7 @@ public class CategoriaServiceImpl implements CategoriaService {
     return page.map(mapper::CategoriaDbToCategoriaList);
   }
 
+  // Filtrado
   @Override
   public Page<CategoriaList> getCategoriasByNombre(String nombre, Pageable pageable) {
     Page<CategoriaDb> page = categoriaRepository.findByNombreContainingIgnoreCase(nombre, pageable);

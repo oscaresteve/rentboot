@@ -10,9 +10,8 @@ import com.oscaresteve.rentboot.model.db.AlquilerDb;
 @Repository
 public interface AlquilerRepository extends JpaRepository<AlquilerDb, Long> {
 
-  //Buscar por id de cliente
+  // Filtrado
   Page<AlquilerDb> findByClienteId(Long clienteId, Pageable pageable);
 
-  //Buscar por id de vehiculo
   Page<AlquilerDb> findByVehiculoId(Long vehiculoId, Pageable pageable);
 }

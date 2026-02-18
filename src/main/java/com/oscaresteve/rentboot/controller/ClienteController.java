@@ -53,6 +53,7 @@ public class ClienteController {
     return ResponseEntity.ok(clienteService.getAllClientes(pageable));
   }
 
+  // Filtrado
   @GetMapping("/nombre/{nombre}")
   public ResponseEntity<Page<ClienteList>> getClientesByNombre(
       @PathVariable String nombre,

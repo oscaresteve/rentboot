@@ -29,12 +29,14 @@ public class UsuarioController {
   @Autowired
   private UsuarioService usuarioService;
 
+  // Create
   @PostMapping
   public ResponseEntity<UsuarioView> createUsuario(@Valid @RequestBody UsuarioEdit usuarioEdit) {
     UsuarioView created = usuarioService.createUsuario(usuarioEdit);
     return ResponseEntity.ok(created);
   }
 
+  // Read
   @GetMapping("/{id}")
   public ResponseEntity<UsuarioView> getUsuarioById(@PathVariable Long id) {
     UsuarioView usuarioView = usuarioService.getUsuarioById(id);
@@ -51,6 +53,7 @@ public class UsuarioController {
     return ResponseEntity.ok(usuarioService.getAllUsuarios(pageable));
   }
 
+  // Filtrado
   @GetMapping("/username/{username}")
   public ResponseEntity<Page<UsuarioList>> getUsuariosByUsername(
       @PathVariable String username,
@@ -62,6 +65,7 @@ public class UsuarioController {
     return ResponseEntity.ok(usuarioService.getUsuariosByUsername(username, pageable));
   }
 
+  // Update
   @PutMapping("/{id}")
   public ResponseEntity<UsuarioView> updateUsuario(
       @PathVariable Long id,
@@ -71,6 +75,7 @@ public class UsuarioController {
     return ResponseEntity.ok(updated);
   }
 
+  // Delete
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
     usuarioService.deleteUsuario(id);

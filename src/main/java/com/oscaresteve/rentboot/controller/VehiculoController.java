@@ -29,12 +29,14 @@ public class VehiculoController {
   @Autowired
   private VehiculoService vehiculoService;
 
+  // Create
   @PostMapping
   public ResponseEntity<VehiculoView> createVehiculo(@Valid @RequestBody VehiculoEdit vehiculoEdit) {
     VehiculoView created = vehiculoService.createVehiculo(vehiculoEdit);
     return ResponseEntity.ok(created);
   }
 
+  // Read
   @GetMapping("/{id}")
   public ResponseEntity<VehiculoView> getVehiculoById(@PathVariable Long id) {
     VehiculoView vehiculoView = vehiculoService.getVehiculoById(id);
@@ -51,6 +53,7 @@ public class VehiculoController {
     return ResponseEntity.ok(vehiculoService.getAllVehiculos(pageable));
   }
 
+  // Filtrado
   @GetMapping("/disponible/{disponible}")
   public ResponseEntity<Page<VehiculoList>> getVehiculosByDisponible(
       @PathVariable Boolean disponible,
@@ -62,6 +65,7 @@ public class VehiculoController {
     return ResponseEntity.ok(vehiculoService.getVehiculosByDisponible(disponible, pageable));
   }
 
+  // Update
   @PutMapping("/{id}")
   public ResponseEntity<VehiculoView> updateVehiculo(
       @PathVariable Long id,
@@ -71,6 +75,7 @@ public class VehiculoController {
     return ResponseEntity.ok(updated);
   }
 
+  // Delete
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteVehiculo(@PathVariable Long id) {
     vehiculoService.deleteVehiculo(id);

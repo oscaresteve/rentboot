@@ -61,6 +61,7 @@ public class AlquilerServiceImpl implements AlquilerService {
     return page.map(mapper::AlquilerDbToAlquilerList);
   }
 
+  // Filtrado
   @Override
   public Page<AlquilerList> getAlquileresByClienteId(Long clienteId, Pageable pageable) {
     Page<AlquilerDb> page = alquilerRepository.findByClienteId(clienteId, pageable);

@@ -53,6 +53,7 @@ public class VehiculoServiceImpl implements VehiculoService {
     return page.map(mapper::VehiculoDbToVehiculoList);
   }
 
+  // Filtrado
   @Override
   public Page<VehiculoList> getVehiculosByDisponible(Boolean disponible, Pageable pageable) {
     Page<VehiculoDb> page = vehiculoRepository.findByDisponible(disponible, pageable);

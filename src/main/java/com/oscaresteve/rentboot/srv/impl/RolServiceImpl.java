@@ -44,6 +44,7 @@ public class RolServiceImpl implements RolService {
     return page.map(mapper::RolDbToRolList);
   }
 
+  // Filtrado
   @Override
   public Page<RolList> getRolesByNombre(String nombre, Pageable pageable) {
     Page<RolDb> page = rolRepository.findByNombreContainingIgnoreCase(nombre, pageable);
