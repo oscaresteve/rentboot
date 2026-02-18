@@ -1,178 +1,212 @@
-🚗 RentBoot
+# RentBoot
 
-API REST desarrollada con Spring Boot para la gestión de alquiler de vehículos.
+API REST para gestion de alquiler de vehiculos, construida con Spring Boot, PostgreSQL y seguridad JWT.
 
-Proyecto académico orientado a la aplicación de los conceptos avanzados vistos en la segunda evaluación:
-
-- Arquitectura en capas
-- Principios SOLID
-- DTOs y mapeo
-- Gestión global de excepciones
-- Paginación, filtrado y ordenación
-- Seguridad con JWT
-- Documentación con Swagger/OpenAPI
-- Base de datos PostgreSQL en Docker
-
-📌 Información General
-
-- Nombre del proyecto: RentBoot
-- Empaquetado: WAR
-- Puerto de ejecución: 8090
-- Base de datos: PostgreSQL
-- Gestión de dependencias: Maven
-
-🛠 Tecnologías Utilizadas
+## 1. Stack Tecnico
 
 - Java 21
-- Spring Boot 3.5.x
+- Spring Boot 3.5.10
 - Spring Web
 - Spring Data JPA
-- PostgreSQL
-- Docker
-- Lombok
-- Spring Validation
 - Spring Security (JWT)
-- Springdoc OpenAPI (Swagger)
+- Spring Validation
+- Springdoc OpenAPI (Swagger UI)
+- MapStruct
+- Lombok
+- PostgreSQL 16 (Docker)
+- Maven
 
-🏗 Arquitectura del Proyecto
+## 2. Estructura del Proyecto
 
-El proyecto sigue una arquitectura en capas:
+Ruta base del codigo:
 
-    Controller → Service → Repository
+- `src/main/java/com/oscaresteve/rentboot`
 
-Separación en paquetes:
+Capas principales:
 
-- config
-- controller
-- service
-- service.impl
-- repository
-- entity
-- dto
-- mapper
-- exception
-- security
+- `controller`: endpoints REST
+- `srv` y `srv/impl`: logica de negocio
+- `repository`: acceso a datos
+- `model/db`: entidades JPA
+- `model/dto`: DTOs de entrada/salida
+- `srv/mapper`: mapeos MapStruct
+- `security`: JWT, filtros y configuracion de seguridad
+- `exception`: manejo global de errores
 
-Aplicando principios SOLID y separación de responsabilidades.
+Recursos:
 
-🐳 Base de Datos (PostgreSQL con Docker)
+- `src/main/resources/application.properties`
+- `src/main/resources/META-INF/additional-spring-configuration-metadata.json`
 
-Requisitos:
+SQL:
 
-- Docker instalado
-- Docker Compose habilitado
+- `database/create_database.sql`
+- `database/create_tables.sql`
+- `database/insert_data.sql`
 
-Levantar el contenedor
+Coleccion de pruebas HTTP:
 
-Desde la raíz del proyecto:
+- `http/*.http`
 
-    docker compose up -d
+## 3. Modelo de Datos
 
-Configuración del contenedor
+Tablas principales:
 
-- Base de datos: rentboot
-- Usuario: rentboot
-- Contraseña: rentboot2026
-- Puerto: 5432
+- `cliente`
+- `categoria`
+- `vehiculo`
+- `alquiler`
+- `usuario`
+- `rol`
+- `usuario_rol`
 
-🗄 Scripts SQL
+Relaciones:
 
-Ubicación:
+- `categoria (1) -> (N) vehiculo`
+- `cliente (1) -> (N) alquiler`
+- `vehiculo (1) -> (N) alquiler`
+- `usuario (N) <-> (M) rol` por `usuario_rol`
 
-    /database
+## 4. Configuracion
 
-Archivos incluidos:
+Archivo: `src/main/resources/application.properties`
 
-- create_database.sql
-- create_tables.sql
-- insert_data.sql
+Valores actuales relevantes:
 
-Estos scripts permiten crear manualmente la base de datos y todas las tablas necesarias para el funcionamiento de la aplicación.
+- `server.port=8090`
+- `spring.datasource.url=jdbc:postgresql://localhost:5432/rentboot`
+- `spring.datasource.username=postgres`
+- `spring.datasource.password=root`
+- `spring.jpa.hibernate.ddl-auto=validate`
+- `springdoc.api-docs.path=/api-docs`
+- `springdoc.swagger-ui.path=/swagger-rentboot-ui`
+- `jwt.expiration=3600000`
 
-📊 Modelo Relacional
+Nota: el `docker-compose.yml` usa por defecto credenciales `rentboot / rentboot2026`. Si usas Docker tal cual, ajusta `application.properties` o cambia las variables del contenedor para que coincidan.
 
-Relaciones principales del sistema:
+## 5. Arranque Rapido
 
-Cliente (1) ──── (N) Alquiler (N) ──── (1) Vehiculo (N) ──── (1) Categoria
-Usuario (N) ──── (M) Rol
+### Opcion A: Base de datos en Docker
 
-Tablas principales
+1. Levantar PostgreSQL:
 
-- cliente
-- categoria
-- vehiculo
-- alquiler
-- usuario
-- rol
-- usuario_rol
+```bash
+docker compose up -d
+```
 
-⚙ Configuración de la Aplicación
+2. Crear esquema y datos (si no usas auto-init):
 
-Archivo:
+```bash
+psql -h localhost -U rentboot -d rentboot -f database/create_tables.sql
+psql -h localhost -U rentboot -d rentboot -f database/insert_data.sql
+```
 
-    src/main/resources/application.properties
+### Opcion B: Base de datos local ya existente
 
-Puerto configurado:
+1. Crear base de datos `rentboot`.
+2. Ejecutar:
 
-    server.port=8090
+```bash
+psql -h localhost -U <usuario> -d rentboot -f database/create_tables.sql
+psql -h localhost -U <usuario> -d rentboot -f database/insert_data.sql
+```
 
-Hibernate configurado para validar el esquema:
+## 6. Ejecucion de la API
 
-    spring.jpa.hibernate.ddl-auto=validate
+Con Maven Wrapper:
 
-📦 Generar el WAR
+```bash
+./mvnw spring-boot:run
+```
 
-Para generar el archivo WAR:
+En Windows PowerShell:
 
-    mvn clean package
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-Archivo generado:
+Compilar WAR:
 
-    target/rentboot.war
+```bash
+./mvnw clean package
+```
 
-Puede ejecutarse como aplicación standalone o desplegarse en un servidor externo (ej. Apache Tomcat).
+Salida:
 
-📄 Documentación Swagger
+- `target/rentboot-0.0.1-SNAPSHOT.war`
 
-La documentación OpenAPI está integrada con Springdoc.
+## 7. Documentacion OpenAPI
 
-Una vez ejecutada la aplicación en el puerto `8090`, puedes acceder a:
+- Swagger UI: `http://localhost:8090/swagger-rentboot-ui`
+- OpenAPI JSON: `http://localhost:8090/api-docs`
 
-    http://localhost:8090/swagger-rentboot-ui
+Configuracion en:
 
-Especificación OpenAPI (JSON):
+- `src/main/resources/application.properties`
+- `src/main/java/com/oscaresteve/rentboot/swagger/OpenApiConfig.java`
 
-    http://localhost:8090/api-docs
+## 8. Seguridad y Autenticacion
 
-Configuración principal en:
+Login y registro:
 
-    src/main/resources/application.properties
+- `POST /api/auth/login`
+- `POST /api/auth/register`
 
-Propiedades usadas:
+Cabecera para endpoints protegidos:
 
-    springdoc.swagger-ui.enabled=true
-    springdoc.api-docs.enabled=true
-    springdoc.api-docs.path=/api-docs
-    springdoc.swagger-ui.path=/swagger-rentboot-ui
+```http
+Authorization: Bearer <jwt>
+```
 
-Metadatos globales de la API (título, versión, contacto, servidor):
+Reglas principales:
 
-    src/main/java/com/oscaresteve/rentboot/swagger/OpenApiConfig.java
+- Publico: `/api/auth/**`, Swagger y docs OpenAPI
+- Solo `ADMIN`: `/api/usuarios/**`, `/api/roles/**`
+- `GET` de catalogos y alquileres: `USER` o `ADMIN`
+- `POST` de alquileres: `USER` o `ADMIN`
+- `PUT/DELETE` de alquileres: `ADMIN`
+- `POST/PUT/DELETE` de categorias, vehiculos y clientes: `ADMIN`
 
-🔐 Seguridad
+## 9. Datos Iniciales
 
-La API implementará autenticación basada en JWT para proteger determinados recursos.
+El script `database/insert_data.sql` carga datos de prueba realistas para validar:
 
-Se incluirá:
+- CRUD completo de categorias, clientes, vehiculos, alquileres
+- Filtros de alquiler por cliente/vehiculo
+- Estadisticas (`/api/alquileres/stats/*`)
+- Seguridad por rol
 
-- Endpoint de login
-- Protección de endpoints específicos
-- Configuración de Swagger con autenticación Bearer
+Usuarios iniciales:
 
-🧪 Pruebas
+- Admin: `admin`
+- User: `user.demo`
+- Inactivo: `operador.inactivo`
 
-Todas las funcionalidades implementadas estarán documentadas en un fichero:
+Contrasenas:
 
-    rentboot-tests.http
+- `Admin12345!`
+- `User12345!`
+- `Operador123!`
 
-    ⚠️ Solo se evaluarán las funcionalidades incluidas en este fichero.
+## 10. Endpoints Base
+
+- `/api/auth`
+- `/api/usuarios`
+- `/api/roles`
+- `/api/categorias`
+- `/api/clientes`
+- `/api/vehiculos`
+- `/api/alquileres`
+
+## 11. Pruebas Manuales
+
+Para probar rapido desde VS Code:
+
+- `http/auth-tests.http`
+- `http/security-tests.http`
+- `http/rol-tests.http`
+- `http/usuario-tests.http`
+- `http/categoria-tests.http`
+- `http/cliente-tests.http`
+- `http/vehiculo-tests.http`
+- `http/alquiler-tests.http`
