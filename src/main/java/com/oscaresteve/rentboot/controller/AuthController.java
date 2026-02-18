@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -35,6 +36,7 @@ public class AuthController {
 
   // Login
   @PostMapping("/login")
+  @SecurityRequirements
   @Operation(summary = "Login", description = "Autentica usuario y devuelve JWT")
   @ApiResponses({
     @ApiResponse(responseCode = "200", description = "Login correcto", content = {
@@ -50,6 +52,7 @@ public class AuthController {
 
   // Register
   @PostMapping("/register")
+  @SecurityRequirements
   @Operation(summary = "Registro", description = "Registra un nuevo usuario")
   @ApiResponses({
     @ApiResponse(responseCode = "201", description = "Usuario registrado", content = {
