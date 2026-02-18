@@ -15,15 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.exception.CustomErrorResponse;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioEdit;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioList;
 import com.oscaresteve.rentboot.model.dto.usuario.UsuarioView;
 import com.oscaresteve.rentboot.srv.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@Tag(name = "Usuarios", description = "Operaciones CRUD y de filtrado para usuarios")
 public class UsuarioController {
 
   @Autowired
@@ -31,6 +39,16 @@ public class UsuarioController {
 
   // Create
   @PostMapping
+  @Operation(summary = "Crear usuario", description = "Crea un nuevo usuario")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Usuario creado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<UsuarioView> createUsuario(@Valid @RequestBody UsuarioEdit usuarioEdit) {
     UsuarioView created = usuarioService.createUsuario(usuarioEdit);
     return ResponseEntity.ok(created);
@@ -38,12 +56,27 @@ public class UsuarioController {
 
   // Read
   @GetMapping("/{id}")
+  @Operation(summary = "Obtener usuario por ID", description = "Retorna el detalle de un usuario por su identificador")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Usuario obtenido correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioView.class)) }),
+      @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<UsuarioView> getUsuarioById(@PathVariable Long id) {
     UsuarioView usuarioView = usuarioService.getUsuarioById(id);
     return ResponseEntity.ok(usuarioView);
   }
 
   @GetMapping
+  @Operation(summary = "Listar usuarios", description = "Retorna una lista paginada de usuarios con ordenacion")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de paginacion u ordenacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<UsuarioList>> getAllUsuarios(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -55,6 +88,13 @@ public class UsuarioController {
 
   // Filtrado
   @GetMapping("/username/{username}")
+  @Operation(summary = "Filtrar usuarios por username", description = "Retorna usuarios paginados filtrados por username")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<UsuarioList>> getUsuariosByUsername(
       @PathVariable String username,
       @RequestParam(defaultValue = "0") int page,
@@ -67,6 +107,18 @@ public class UsuarioController {
 
   // Update
   @PutMapping("/{id}")
+  @Operation(summary = "Actualizar usuario", description = "Actualiza un usuario existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<UsuarioView> updateUsuario(
       @PathVariable Long id,
       @Valid @RequestBody UsuarioEdit usuarioEdit
@@ -77,6 +129,13 @@ public class UsuarioController {
 
   // Delete
   @DeleteMapping("/{id}")
+  @Operation(summary = "Eliminar usuario", description = "Elimina un usuario existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+      @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
     usuarioService.deleteUsuario(id);
     return ResponseEntity.noContent().build();

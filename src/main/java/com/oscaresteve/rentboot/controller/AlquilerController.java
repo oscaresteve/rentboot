@@ -15,15 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.exception.CustomErrorResponse;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerEdit;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerList;
 import com.oscaresteve.rentboot.model.dto.alquiler.AlquilerView;
 import com.oscaresteve.rentboot.srv.AlquilerService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/alquileres")
+@Tag(name = "Alquileres", description = "Operaciones CRUD y de filtrado para alquileres")
 public class AlquilerController {
 
   @Autowired
@@ -31,6 +39,16 @@ public class AlquilerController {
 
   // Create
   @PostMapping
+  @Operation(summary = "Crear alquiler", description = "Crea un nuevo alquiler")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Alquiler creado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = AlquilerView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<AlquilerView> createAlquiler(@Valid @RequestBody AlquilerEdit alquilerEdit) {
     AlquilerView created = alquilerService.createAlquiler(alquilerEdit);
     return ResponseEntity.ok(created);
@@ -38,12 +56,27 @@ public class AlquilerController {
 
   // Read
   @GetMapping("/{id}")
+  @Operation(summary = "Obtener alquiler por ID", description = "Retorna el detalle de un alquiler por su identificador")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Alquiler obtenido correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = AlquilerView.class)) }),
+      @ApiResponse(responseCode = "404", description = "Alquiler no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<AlquilerView> getAlquilerById(@PathVariable Long id) {
     AlquilerView alquilerView = alquilerService.getAlquilerById(id);
     return ResponseEntity.ok(alquilerView);
   }
 
   @GetMapping
+  @Operation(summary = "Listar alquileres", description = "Retorna una lista paginada de alquileres con ordenacion")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de alquileres obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de paginacion u ordenacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<AlquilerList>> getAllAlquileres(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -55,6 +88,13 @@ public class AlquilerController {
 
   // Filtrado
   @GetMapping("/cliente/{clienteId}")
+  @Operation(summary = "Filtrar alquileres por cliente", description = "Retorna alquileres paginados filtrados por identificador de cliente")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de alquileres obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<AlquilerList>> getAlquileresByClienteId(
       @PathVariable Long clienteId,
       @RequestParam(defaultValue = "0") int page,
@@ -66,6 +106,13 @@ public class AlquilerController {
   }
 
   @GetMapping("/vehiculo/{vehiculoId}")
+  @Operation(summary = "Filtrar alquileres por vehiculo", description = "Retorna alquileres paginados filtrados por identificador de vehiculo")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de alquileres obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<AlquilerList>> getAlquileresByVehiculoId(
       @PathVariable Long vehiculoId,
       @RequestParam(defaultValue = "0") int page,
@@ -78,6 +125,18 @@ public class AlquilerController {
 
   // Update
   @PutMapping("/{id}")
+  @Operation(summary = "Actualizar alquiler", description = "Actualiza un alquiler existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Alquiler actualizado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = AlquilerView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "404", description = "Alquiler no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<AlquilerView> updateAlquiler(
       @PathVariable Long id,
       @Valid @RequestBody AlquilerEdit alquilerEdit
@@ -88,6 +147,13 @@ public class AlquilerController {
 
   // Delete
   @DeleteMapping("/{id}")
+  @Operation(summary = "Eliminar alquiler", description = "Elimina un alquiler existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Alquiler eliminado correctamente"),
+      @ApiResponse(responseCode = "404", description = "Alquiler no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Void> deleteAlquiler(@PathVariable Long id) {
     alquilerService.deleteAlquiler(id);
     return ResponseEntity.noContent().build();

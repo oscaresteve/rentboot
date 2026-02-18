@@ -134,13 +134,30 @@ Puede ejecutarse como aplicación standalone o desplegarse en un servidor extern
 
 📄 Documentación Swagger
 
-Una vez ejecutada la aplicación:
+La documentación OpenAPI está integrada con Springdoc.
+
+Una vez ejecutada la aplicación en el puerto `8090`, puedes acceder a:
 
     http://localhost:8090/swagger-rentboot-ui
 
-Documentación OpenAPI disponible en:
+Especificación OpenAPI (JSON):
 
     http://localhost:8090/api-docs
+
+Configuración principal en:
+
+    src/main/resources/application.properties
+
+Propiedades usadas:
+
+    springdoc.swagger-ui.enabled=true
+    springdoc.api-docs.enabled=true
+    springdoc.api-docs.path=/api-docs
+    springdoc.swagger-ui.path=/swagger-rentboot-ui
+
+Metadatos globales de la API (título, versión, contacto, servidor):
+
+    src/main/java/com/oscaresteve/rentboot/swagger/OpenApiConfig.java
 
 🔐 Seguridad
 

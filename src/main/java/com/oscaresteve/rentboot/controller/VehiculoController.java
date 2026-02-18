@@ -15,15 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.exception.CustomErrorResponse;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoEdit;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoList;
 import com.oscaresteve.rentboot.model.dto.vehiculo.VehiculoView;
 import com.oscaresteve.rentboot.srv.VehiculoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/vehiculos")
+@Tag(name = "Vehiculos", description = "Operaciones CRUD y de filtrado para vehiculos")
 public class VehiculoController {
 
   @Autowired
@@ -31,6 +39,16 @@ public class VehiculoController {
 
   // Create
   @PostMapping
+  @Operation(summary = "Crear vehiculo", description = "Crea un nuevo vehiculo")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Vehiculo creado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = VehiculoView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<VehiculoView> createVehiculo(@Valid @RequestBody VehiculoEdit vehiculoEdit) {
     VehiculoView created = vehiculoService.createVehiculo(vehiculoEdit);
     return ResponseEntity.ok(created);
@@ -38,12 +56,27 @@ public class VehiculoController {
 
   // Read
   @GetMapping("/{id}")
+  @Operation(summary = "Obtener vehiculo por ID", description = "Retorna el detalle de un vehiculo por su identificador")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Vehiculo obtenido correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = VehiculoView.class)) }),
+      @ApiResponse(responseCode = "404", description = "Vehiculo no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<VehiculoView> getVehiculoById(@PathVariable Long id) {
     VehiculoView vehiculoView = vehiculoService.getVehiculoById(id);
     return ResponseEntity.ok(vehiculoView);
   }
 
   @GetMapping
+  @Operation(summary = "Listar vehiculos", description = "Retorna una lista paginada de vehiculos con ordenacion")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de vehiculos obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de paginacion u ordenacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<VehiculoList>> getAllVehiculos(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -55,6 +88,13 @@ public class VehiculoController {
 
   // Filtrado
   @GetMapping("/disponible/{disponible}")
+  @Operation(summary = "Filtrar vehiculos por disponibilidad", description = "Retorna vehiculos paginados filtrados por estado de disponibilidad")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de vehiculos obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<VehiculoList>> getVehiculosByDisponible(
       @PathVariable Boolean disponible,
       @RequestParam(defaultValue = "0") int page,
@@ -67,6 +107,18 @@ public class VehiculoController {
 
   // Update
   @PutMapping("/{id}")
+  @Operation(summary = "Actualizar vehiculo", description = "Actualiza un vehiculo existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Vehiculo actualizado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = VehiculoView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "404", description = "Vehiculo no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<VehiculoView> updateVehiculo(
       @PathVariable Long id,
       @Valid @RequestBody VehiculoEdit vehiculoEdit
@@ -77,6 +129,13 @@ public class VehiculoController {
 
   // Delete
   @DeleteMapping("/{id}")
+  @Operation(summary = "Eliminar vehiculo", description = "Elimina un vehiculo existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Vehiculo eliminado correctamente"),
+      @ApiResponse(responseCode = "404", description = "Vehiculo no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Void> deleteVehiculo(@PathVariable Long id) {
     vehiculoService.deleteVehiculo(id);
     return ResponseEntity.noContent().build();

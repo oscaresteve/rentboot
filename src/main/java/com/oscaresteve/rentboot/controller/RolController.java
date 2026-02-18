@@ -15,15 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.exception.CustomErrorResponse;
 import com.oscaresteve.rentboot.model.dto.rol.RolEdit;
 import com.oscaresteve.rentboot.model.dto.rol.RolList;
 import com.oscaresteve.rentboot.model.dto.rol.RolView;
 import com.oscaresteve.rentboot.srv.RolService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/roles")
+@Tag(name = "Roles", description = "Operaciones CRUD y de filtrado para roles")
 public class RolController {
 
   @Autowired
@@ -31,6 +39,16 @@ public class RolController {
 
   // Create
   @PostMapping
+  @Operation(summary = "Crear rol", description = "Crea un nuevo rol")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Rol creado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = RolView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<RolView> createRol(@Valid @RequestBody RolEdit rolEdit) {
     RolView created = rolService.createRol(rolEdit);
     return ResponseEntity.ok(created);
@@ -38,12 +56,27 @@ public class RolController {
 
   // Read
   @GetMapping("/{id}")
+  @Operation(summary = "Obtener rol por ID", description = "Retorna el detalle de un rol por su identificador")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Rol obtenido correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = RolView.class)) }),
+      @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<RolView> getRolById(@PathVariable Long id) {
     RolView rolView = rolService.getRolById(id);
     return ResponseEntity.ok(rolView);
   }
 
   @GetMapping
+  @Operation(summary = "Listar roles", description = "Retorna una lista paginada de roles con ordenacion")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de roles obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de paginacion u ordenacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<RolList>> getAllRoles(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -55,6 +88,13 @@ public class RolController {
 
   // Filtrado
   @GetMapping("/nombre/{nombre}")
+  @Operation(summary = "Filtrar roles por nombre", description = "Retorna roles paginados filtrados por nombre")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de roles obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<RolList>> getRolesByNombre(
       @PathVariable String nombre,
       @RequestParam(defaultValue = "0") int page,
@@ -67,6 +107,18 @@ public class RolController {
 
   // Update
   @PutMapping("/{id}")
+  @Operation(summary = "Actualizar rol", description = "Actualiza un rol existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Rol actualizado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = RolView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<RolView> updateRol(
       @PathVariable Long id,
       @Valid @RequestBody RolEdit rolEdit
@@ -77,6 +129,13 @@ public class RolController {
 
   // Delete
   @DeleteMapping("/{id}")
+  @Operation(summary = "Eliminar rol", description = "Elimina un rol existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Rol eliminado correctamente"),
+      @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Void> deleteRol(@PathVariable Long id) {
     rolService.deleteRol(id);
     return ResponseEntity.noContent().build();

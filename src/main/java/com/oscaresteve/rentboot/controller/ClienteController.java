@@ -15,15 +15,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.oscaresteve.rentboot.helper.PaginationHelper;
+import com.oscaresteve.rentboot.exception.CustomErrorResponse;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteEdit;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteList;
 import com.oscaresteve.rentboot.model.dto.cliente.ClienteView;
 import com.oscaresteve.rentboot.srv.ClienteService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/clientes")
+@Tag(name = "Clientes", description = "Operaciones CRUD y de filtrado para clientes")
 public class ClienteController {
 
   @Autowired
@@ -31,6 +39,16 @@ public class ClienteController {
 
   // Create
   @PostMapping
+  @Operation(summary = "Crear cliente", description = "Crea un nuevo cliente")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Cliente creado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<ClienteView> createCliente(@Valid @RequestBody ClienteEdit clienteEdit) {
     ClienteView created = clienteService.createCliente(clienteEdit);
     return ResponseEntity.ok(created);
@@ -38,12 +56,27 @@ public class ClienteController {
 
   // Read
   @GetMapping("/{id}")
+  @Operation(summary = "Obtener cliente por ID", description = "Retorna el detalle de un cliente por su identificador")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Cliente obtenido correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteView.class)) }),
+      @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<ClienteView> getClienteById(@PathVariable Long id) {
     ClienteView clienteView = clienteService.getClienteById(id);
     return ResponseEntity.ok(clienteView);
   }
 
   @GetMapping
+  @Operation(summary = "Listar clientes", description = "Retorna una lista paginada de clientes con ordenacion")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de paginacion u ordenacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<ClienteList>> getAllClientes(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size,
@@ -55,6 +88,13 @@ public class ClienteController {
 
   // Filtrado
   @GetMapping("/nombre/{nombre}")
+  @Operation(summary = "Filtrar clientes por nombre", description = "Retorna clientes paginados filtrados por nombre")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<ClienteList>> getClientesByNombre(
       @PathVariable String nombre,
       @RequestParam(defaultValue = "0") int page,
@@ -66,6 +106,13 @@ public class ClienteController {
   }
 
   @GetMapping("/email/{email}")
+  @Operation(summary = "Filtrar clientes por email", description = "Retorna clientes paginados filtrados por email")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<ClienteList>> getClientesByEmail(
       @PathVariable String email,
       @RequestParam(defaultValue = "0") int page,
@@ -77,6 +124,13 @@ public class ClienteController {
   }
 
   @GetMapping("/telefono/{telefono}")
+  @Operation(summary = "Filtrar clientes por telefono", description = "Retorna clientes paginados filtrados por telefono")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Lista de clientes obtenida correctamente"),
+      @ApiResponse(responseCode = "400", description = "Parametros de filtro o paginacion invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Page<ClienteList>> getClientesByTelefono(
       @PathVariable String telefono,
       @RequestParam(defaultValue = "0") int page,
@@ -89,6 +143,18 @@ public class ClienteController {
 
   // Update
   @PutMapping("/{id}")
+  @Operation(summary = "Actualizar cliente", description = "Actualiza un cliente existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Cliente actualizado correctamente", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteView.class)) }),
+      @ApiResponse(responseCode = "400", description = "Datos de entrada invalidos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "409", description = "Conflicto de integridad de datos", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<ClienteView> updateCliente(
       @PathVariable Long id,
       @Valid @RequestBody ClienteEdit clienteEdit
@@ -99,6 +165,13 @@ public class ClienteController {
 
   // Delete
   @DeleteMapping("/{id}")
+  @Operation(summary = "Eliminar cliente", description = "Elimina un cliente existente por ID")
+  @ApiResponses({
+      @ApiResponse(responseCode = "204", description = "Cliente eliminado correctamente"),
+      @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = {
+          @Content(mediaType = "application/json", schema = @Schema(implementation = CustomErrorResponse.class)) }),
+      @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+  })
   public ResponseEntity<Void> deleteCliente(@PathVariable Long id) {
     clienteService.deleteCliente(id);
     return ResponseEntity.noContent().build();
