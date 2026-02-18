@@ -1,0 +1,18 @@
+### Registro de usuario (rol por defecto ROLE_USER)
+POST http://localhost:8090/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "test123",
+  "enabled": true
+}
+
+### Login (obtiene JWT)
+POST http://localhost:8090/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "test",
+  "password": "test123"
+}

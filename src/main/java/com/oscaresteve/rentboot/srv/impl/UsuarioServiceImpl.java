@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.oscaresteve.rentboot.exception.DomainException;
@@ -29,6 +30,9 @@ public class UsuarioServiceImpl implements UsuarioService {
   @Autowired
   private RolRepository rolRepository;
 
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   private final UsuarioMapper mapper = UsuarioMapper.INSTANCE;
 
   // Create
@@ -37,6 +41,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     Set<RolDb> roles = resolveRoles(usuarioEdit.getRolIds());
 
     UsuarioDb usuarioDb = mapper.UsuarioEditToUsuarioDb(usuarioEdit);
+    usuarioDb.setPassword(passwordEncoder.encode(usuarioEdit.getPassword()));
     usuarioDb.setRoles(roles);
     usuarioDb = usuarioRepository.save(usuarioDb);
     return mapper.UsuarioDbToUsuarioView(usuarioDb);
@@ -71,6 +76,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     Set<RolDb> roles = resolveRoles(usuarioEdit.getRolIds());
 
     mapper.updateUsuarioDbFromUsuarioEdit(usuarioEdit, usuarioDb);
+    usuarioDb.setPassword(passwordEncoder.encode(usuarioEdit.getPassword()));
     usuarioDb.setRoles(roles);
     usuarioDb = usuarioRepository.save(usuarioDb);
     return mapper.UsuarioDbToUsuarioView(usuarioDb);
@@ -86,6 +92,9 @@ public class UsuarioServiceImpl implements UsuarioService {
   }
 
   private Set<RolDb> resolveRoles(Set<Long> rolIds) {
+    if (rolIds == null || rolIds.isEmpty()) {
+      throw new DomainException("INVALID_ROLE_REFERENCE", "El usuario debe tener al menos un rol");
+    }
     Set<RolDb> roles = rolRepository.findAllById(rolIds).stream().collect(Collectors.toSet());
     if (roles.size() != rolIds.size()) {
       throw new DomainException("INVALID_ROLE_REFERENCE", "Uno o mas roles no existen");

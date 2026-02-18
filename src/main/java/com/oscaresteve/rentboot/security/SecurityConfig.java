@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.oscaresteve.rentboot.security.core.AuthEntryPoint;
 import com.oscaresteve.rentboot.security.core.CustomUserDetailsService;
+import com.oscaresteve.rentboot.security.core.CustomAccessDeniedHandler;
 import com.oscaresteve.rentboot.security.jwt.JwtAuthFilter;
 
 @Configuration
@@ -24,15 +25,18 @@ public class SecurityConfig {
 
   private final JwtAuthFilter jwtAuthFilter;
   private final AuthEntryPoint authEntryPoint;
+  private final CustomAccessDeniedHandler accessDeniedHandler;
   private final CustomUserDetailsService userDetailsService;
 
   public SecurityConfig(
     JwtAuthFilter jwtAuthFilter,
     AuthEntryPoint authEntryPoint,
+    CustomAccessDeniedHandler accessDeniedHandler,
     CustomUserDetailsService userDetailsService
   ) {
     this.jwtAuthFilter = jwtAuthFilter;
     this.authEntryPoint = authEntryPoint;
+    this.accessDeniedHandler = accessDeniedHandler;
     this.userDetailsService = userDetailsService;
   }
 
@@ -41,7 +45,10 @@ public class SecurityConfig {
     http
       .csrf(AbstractHttpConfigurer::disable)
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .exceptionHandling(ex -> ex.authenticationEntryPoint(authEntryPoint))
+      .exceptionHandling(ex -> ex
+        .authenticationEntryPoint(authEntryPoint)
+        .accessDeniedHandler(accessDeniedHandler)
+      )
       .authenticationProvider(authenticationProvider())
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(
@@ -52,8 +59,8 @@ public class SecurityConfig {
           "/swagger-ui/**",
           "/swagger-ui.html"
         ).permitAll()
-        // En la fase 1 dejamos libre el resto; en la fase 3 se protege el CRUD elegido.
-        .anyRequest().permitAll()
+        .requestMatchers("/api/usuarios/**", "/api/roles/**").hasRole("ADMIN")
+        .anyRequest().authenticated()
       )
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

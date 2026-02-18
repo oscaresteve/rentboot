@@ -1,8 +1,8 @@
 package com.oscaresteve.rentboot.security.srv.impl;
 
 import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.oscaresteve.rentboot.exception.DomainException;
 import com.oscaresteve.rentboot.model.db.RolDb;
@@ -60,11 +61,11 @@ public class AuthServiceImpl implements AuthService {
     List<String> roles = principal.getAuthorities().stream()
       .map(GrantedAuthority::getAuthority)
       .toList();
-
     return new JwtDto(token, "Bearer", principal.getUsername(), roles);
   }
 
   @Override
+  @Transactional
   public UsuarioView register(RegisterRequest request) {
     if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
       throw new DomainException("USERNAME_ALREADY_EXISTS", "El username ya esta en uso");
@@ -74,23 +75,15 @@ public class AuthServiceImpl implements AuthService {
     usuarioDb.setUsername(request.getUsername());
     usuarioDb.setPassword(passwordEncoder.encode(request.getPassword()));
     usuarioDb.setEnabled(request.getEnabled() == null ? Boolean.TRUE : request.getEnabled());
-    usuarioDb.setRoles(resolveRoles(request.getRolIds()));
+    usuarioDb.setRoles(resolveDefaultRole());
 
     UsuarioDb saved = usuarioRepository.save(usuarioDb);
     return usuarioMapper.UsuarioDbToUsuarioView(saved);
   }
 
-  private Set<RolDb> resolveRoles(Set<Long> rolIds) {
-    if (rolIds == null || rolIds.isEmpty()) {
-      RolDb defaultRole = rolRepository.findByNombre("ROLE_USER")
-        .orElseThrow(() -> new DomainException("ROLE_NOT_FOUND", "El rol por defecto ROLE_USER no existe"));
-      return Set.of(defaultRole);
-    }
-
-    Set<RolDb> roles = rolRepository.findAllById(rolIds).stream().collect(Collectors.toSet());
-    if (roles.size() != rolIds.size()) {
-      throw new DomainException("INVALID_ROLE_REFERENCE", "Uno o mas roles no existen");
-    }
-    return roles;
+  private Set<RolDb> resolveDefaultRole() {
+    RolDb defaultRole = rolRepository.findByNombre("ROLE_USER")
+      .orElseThrow(() -> new DomainException("ROLE_NOT_FOUND", "El rol por defecto ROLE_USER no existe"));
+    return new HashSet<>(Set.of(defaultRole));
   }
 }

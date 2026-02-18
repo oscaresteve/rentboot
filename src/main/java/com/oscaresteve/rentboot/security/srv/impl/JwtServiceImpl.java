@@ -31,7 +31,6 @@ public class JwtServiceImpl implements JwtService {
     List<String> roles = userDetails.getAuthorities().stream()
       .map(GrantedAuthority::getAuthority)
       .toList();
-
     return Jwts.builder()
       .subject(userDetails.getUsername())
       .claim("roles", roles)

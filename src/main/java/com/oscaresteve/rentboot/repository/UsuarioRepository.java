@@ -2,6 +2,7 @@ package com.oscaresteve.rentboot.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,7 @@ import com.oscaresteve.rentboot.model.db.UsuarioDb;
 public interface UsuarioRepository extends JpaRepository<UsuarioDb, Long> {
 
   // Filtrado
+  @EntityGraph(attributePaths = "roles")
   Optional<UsuarioDb> findByUsername(String username);
 
   Page<UsuarioDb> findByUsernameContainingIgnoreCase(String username, Pageable pageable);

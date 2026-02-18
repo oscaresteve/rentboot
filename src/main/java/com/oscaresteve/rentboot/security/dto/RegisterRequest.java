@@ -1,7 +1,5 @@
 package com.oscaresteve.rentboot.security.dto;
 
-import java.util.Set;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,6 +20,4 @@ public class RegisterRequest {
   private String password;
 
   private Boolean enabled = true;
-
-  private Set<Long> rolIds;
 }

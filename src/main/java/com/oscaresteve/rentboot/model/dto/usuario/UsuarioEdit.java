@@ -3,6 +3,7 @@ package com.oscaresteve.rentboot.model.dto.usuario;
 import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,6 @@ public class UsuarioEdit {
   @NotNull(message = "El estado enabled es obligatorio")
   private Boolean enabled;
 
-  @NotNull(message = "Los roles son obligatorios")
+  @NotEmpty(message = "Los roles son obligatorios")
   private Set<Long> rolIds;
 }
